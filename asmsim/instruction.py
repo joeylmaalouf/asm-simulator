@@ -14,7 +14,8 @@ class Instruction(object):
     return self.raw
 
   def run(self, registers):
-    pass
+    # TODO
+    return self
 
 
 if __name__ == "__main__":

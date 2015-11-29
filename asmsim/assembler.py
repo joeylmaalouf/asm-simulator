@@ -13,14 +13,19 @@ class Assembler(object):
     self.instructions = [Instruction(line) for line in instruction_text.split("\n") if line.strip()]
 
   def __str__(self):
-    return "Mode:\n{0}\nInstructions:\n{1}".format(self.mode, "\n".join(str(i) for i in self.instructions))
+    return "{0} Assembler".format(self.mode)
 
   def run(self):
     for instr in self.instructions:
       instr.run(self.registers)
+    return self
+
+  def display(self):
+    print("{0}\nRegister Values:\n{1}".format(self, self.registers))
+    return self
 
 
 if __name__ == "__main__":
   asm = Assembler("li $t0, 1\nli $t1, 2", "ARM")
-  print(asm)
   asm.run()
+  asm.display()
