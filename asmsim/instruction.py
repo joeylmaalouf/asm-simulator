@@ -13,7 +13,7 @@ class Instruction(object):
 
   def __str__(self):
     """ String representation of the instruction. """
-    return self.raw
+    return "{0} {1}".format(self.operation, ", ".join([v for v in [self.output, self.input0, self.input1] if v is not None]))
 
   def run(self, registers):
     """ Execute the instruction on the given registers. """
