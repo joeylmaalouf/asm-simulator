@@ -34,6 +34,7 @@ MIPS_registers = {
 }
 
 ARM_registers = {
+  #ARM has only 17 registers, but a number of different ways to refer to those same 17 registers. Here we allow people to use the format they like best
   "R0":    0, "A1": 0,
   "R1":    1, "A2": 1,
   "R2":    2, "A3": 2,
