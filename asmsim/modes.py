@@ -1,5 +1,4 @@
-# conversion dictionaries for strings that refer to registers
-
+# MIPS is a nice 1:1 conversion
 MIPS_registers = {
   "$zero": 0,
   "$at":   1,
@@ -35,8 +34,8 @@ MIPS_registers = {
   "$ra":  31
 }
 
+# ARM has multiple aliases for the same register
 ARM_registers = {
-  #ARM has only 17 registers, but a number of different ways to refer to those same 17 registers. Here we allow people to use the format they like best
   "R0":    0, "A1": 0,
   "R1":    1, "A2": 1,
   "R2":    2, "A3": 2,
@@ -56,6 +55,7 @@ ARM_registers = {
   "CPSR": 16
 }
 
+# conversion dictionaries for strings that refer to registers
 mode_dict = {
   "MIPS": MIPS_registers,
   "ARM": ARM_registers
