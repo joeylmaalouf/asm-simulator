@@ -1,3 +1,5 @@
+# conversion dictionaries for strings that refer to registers
+
 MIPS_registers = {
   "$zero": 0,
   "$at":   1,
