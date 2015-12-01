@@ -1,5 +1,6 @@
-li $t0, 2
-li $t1, 2
-
-addu $t2, $t0, $t1
-addiu $v0, $t2, 1
+noop
+mov $t0, $zero
+clear $t0
+not $t0, $t0
+li $t1, 5
+li $t2, 0x3BF20
