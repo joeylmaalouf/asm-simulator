@@ -35,6 +35,47 @@ def preprocess(program_text, mode):
             instr.update("lui", instr.operand0, upper(val), instr.operand2)
             processed.append(str(instr))
             instr.update("ori", instr.operand0, instr.operand0, lower(val))
+        elif instr.operation == "bge":
+          label = instr.operand2
+          instr.operation, instr.operand0, instr.operand1, instr.operand2 = "slt", "$at", instr.operand0, instr.operand1
+          processed.append(str(instr))
+          instr.operation, instr.operand1, instr.operand2 = "beq", "$zero", label
+        elif instr.operation == "bgt":
+          label = instr.operand2
+          instr.operation, instr.operand0, instr.operand2 = "slt", "$at", instr.operand0
+          processed.append(str(instr))
+          instr.operation, instr.operand1, instr.operand2 = "bne", "$zero", label
+        elif instr.operation == "ble":
+          label = instr.operand2
+          instr.operation, instr.operand0, instr.operand2 = "slt", "$at", instr.operand0
+          processed.append(str(instr))
+          instr.operation, instr.operand1, instr.operand2 = "beq", "$zero", label
+        elif instr.operation == "blt":
+          label = instr.operand2
+          instr.operation, instr.operand0, instr.operand1, instr.operand2 = "slt", "$at", instr.operand0, instr.operand1
+          processed.append(str(instr))
+          instr.operation, instr.operand1, instr.operand2 = "bne", "$zero", label
+        elif instr.operation == "b":
+          instr.operation, instr.operand0, instr.operand1, instr.operand2 = "beq", "$zero", "$zero", instr.operand0
+        elif instr.operation == "bal":
+          instr.operation, instr.operand0, instr.operand1 = "bgezal", "$zero", instr.operand0
+        elif instr.operation == "blez":
+          label = instr.operand1
+          instr.operation, instr.operand0, instr.operand1, instr.operand2 = "slt", "$at", "$zero", instr.operand0
+          processed.append(str(instr))
+          instr.operation, instr.operand2 = "beq", label
+        elif instr.operation == "bgtu":
+          label = instr.operand2
+          instr.operation, instr.operand0, inst.input1 = "sltu", "$at", instr.operand0
+          processed.append(str(instr))
+          instr.operation, instr.operand1, instr.operand2 = "bne", "$zero", label
+        elif instr.operation == "bgtz":
+          label = instr.operand1
+          instr.operation, instr.operand0, instr.operand1, instr.operand2 = "slt", "$at", "$zero", instr.operand0
+          processed.append(str(instr))
+          instr.operation, instr.operand2 = "bne", label
+        elif instr.operation == "beqz":
+          instr.operation, instr.operand1, instr.operand2 = "beq", "$zero", instr.operand1
         elif instr.operation == "mul":
           tmp = instr.operand0
           instr.update("mult", instr.operand1, instr.operand2, None)
