@@ -4,10 +4,8 @@ class Instruction(object):
     super(Instruction, self).__init__()
     self.raw = text
     words = text.replace(",", "").split()
-    if len(words) < 2:
-      raise ValueError("Instruction must have at least two components. Invalid instruction: {0}".format(text))
     self.operation = words[0]
-    self.output = words[1]
+    self.output = words[1] if len(words) > 1 else None
     self.input0 = words[2] if len(words) > 2 else None
     self.input1 = words[3] if len(words) > 3 else None
 

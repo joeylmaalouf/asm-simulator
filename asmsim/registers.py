@@ -4,6 +4,7 @@ from modes import mode_dict
 class Registers(object):
   """ The registers object that contains the register values and proper getting/setting methods. """
   def __init__(self, mode = "MIPS"):
+    super(Registers, self).__init__()
     if mode.upper() in mode_dict:
       self.conversion = mode_dict[mode.upper()]
     else:
