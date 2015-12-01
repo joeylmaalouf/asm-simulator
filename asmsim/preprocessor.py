@@ -37,56 +37,56 @@ def preprocess(program_text, mode):
             instr.update("ori", instr.operand0, instr.operand0, lower(val))
         elif instr.operation == "bge":
           label = instr.operand2
-          instr.operation, instr.operand0, instr.operand1, instr.operand2 = "slt", "$at", instr.operand0, instr.operand1
+          instr.update("slt", "$at", instr.operand0, instr.operand1)
           processed.append(str(instr))
-          instr.operation, instr.operand1, instr.operand2 = "beq", "$zero", label
+          instr.update("beq", instr.operand0, "$zero", label)
         elif instr.operation == "bgt":
           label = instr.operand2
-          instr.operation, instr.operand0, instr.operand2 = "slt", "$at", instr.operand0
+          instr.update("slt", "$at", instr.operand1, instr.operand0)
           processed.append(str(instr))
-          instr.operation, instr.operand1, instr.operand2 = "bne", "$zero", label
+          instr.update("bne", instr.operand0, "$zero", label)
         elif instr.operation == "ble":
           label = instr.operand2
-          instr.operation, instr.operand0, instr.operand2 = "slt", "$at", instr.operand0
+          instr.update("slt", "$at", instr.operand1, instr.operand0)
           processed.append(str(instr))
-          instr.operation, instr.operand1, instr.operand2 = "beq", "$zero", label
+          instr.update("beq", instr.operand0, "$zero", label)
         elif instr.operation == "blt":
           label = instr.operand2
-          instr.operation, instr.operand0, instr.operand1, instr.operand2 = "slt", "$at", instr.operand0, instr.operand1
+          instr.update("slt", "$at", instr.operand0, instr.operand1)
           processed.append(str(instr))
-          instr.operation, instr.operand1, instr.operand2 = "bne", "$zero", label
+          instr.update("bne", instr.operand0, "$zero", label)
         elif instr.operation == "b":
-          instr.operation, instr.operand0, instr.operand1, instr.operand2 = "beq", "$zero", "$zero", instr.operand0
+          instr.update("beq", "$zero", "$zero", instr.operand0)
         elif instr.operation == "bal":
-          instr.operation, instr.operand0, instr.operand1 = "bgezal", "$zero", instr.operand0
+          instr.update("bgezal", "$zero", instr.operand0, instr.operand2)
         elif instr.operation == "blez":
           label = instr.operand1
-          instr.operation, instr.operand0, instr.operand1, instr.operand2 = "slt", "$at", "$zero", instr.operand0
+          instr.update("slt", "$at", "$zero", instr.operand0)
           processed.append(str(instr))
-          instr.operation, instr.operand2 = "beq", label
+          instr.update("beq", instr.operand0, instr.operand1, label)
         elif instr.operation == "bgtu":
           label = instr.operand2
-          instr.operation, instr.operand0, inst.input1 = "sltu", "$at", instr.operand0
+          instr.update("sltu", "$at", instr.operand1, instr.operand0)
           processed.append(str(instr))
-          instr.operation, instr.operand1, instr.operand2 = "bne", "$zero", label
+          instr.update("bne", instr.operand0, "$zero", label)
         elif instr.operation == "bgtz":
           label = instr.operand1
-          instr.operation, instr.operand0, instr.operand1, instr.operand2 = "slt", "$at", "$zero", instr.operand0
+          instr.update("slt", "$at", "$zero", instr.operand0)
           processed.append(str(instr))
-          instr.operation, instr.operand2 = "bne", label
+          instr.update("bne", instr.operand0, instr.operand1, label)
         elif instr.operation == "beqz":
-          instr.operation, instr.operand1, instr.operand2 = "beq", "$zero", instr.operand1
+          instr.update("beq", instr.operand0, "$zero", instr.operand1)
         elif instr.operation == "mul":
-          tmp = instr.operand0
+          output = instr.operand0
           instr.update("mult", instr.operand1, instr.operand2, None)
           processed.append(str(instr))
-          instr.update("mflo", tmp, None, None)
+          instr.update("mflo", output, None, None)
         elif instr.operation == "div" or instr.operation == "rem": # add bne and break, like MARS, to check for no div by 0?
-          tmp0 = instr.operand0
-          tmp1 = instr.operation == "rem"
+          output = instr.operand0
+          isrem = instr.operation == "rem"
           instr.update("div", instr.operand1, instr.operand2, None)
           processed.append(str(instr))
-          instr.update(["mflo", "mfhi"][int(tmp1)], tmp0, None, None)
+          instr.update(["mflo", "mfhi"][int(isrem)], output, None, None)
         processed.append(str(instr))
 
       elif mode == "ARM":
