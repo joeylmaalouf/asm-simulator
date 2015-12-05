@@ -96,6 +96,20 @@ def preprocess(program_text, mode):
   return "\n".join(processed)
 
 
+def label_positions(program_text):
+  """ Creates a dict of label positions for use in jumping and branching. """
+  labels = {}
+  cur_line = 0
+  for line in program_text.split("\n"):
+    l = line.strip()
+    if l:
+      word = l.split(" ")[0]
+      if word[-1] == ":":
+        labels[word[:-1]] = cur_line
+      cur_line += 1
+  return labels
+
+
 def normalize(program_text, mode):
   """ Converts instructions from a specific assembly language to our common
   instruction set, so we don't have to process instruction logic based on mode. """
@@ -104,6 +118,7 @@ def normalize(program_text, mode):
 
 
 if __name__ == "__main__":
-  example = "li $t1, 5\nli $t2, 0x3BF20\n"
+  example = "text:\nli $t1, 5\nli $t2, 0x3BF20\n"
   print(example)
   print(preprocess(example, "MIPS"))
+  print(label_positions(preprocess(example, "MIPS"), "MIPS"))

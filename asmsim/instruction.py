@@ -1,6 +1,3 @@
-from utils import twoscomp
-
-
 class Instruction(object):
   """ An instruction that consists of an operation and 0-3 operands. """
   def __init__(self, text):
@@ -21,17 +18,6 @@ class Instruction(object):
     self.operand0 = operand0
     self.operand1 = operand1
     self.operand2 = operand2
-
-  def run(self, registers):
-    """ Execute the instruction on the given registers. """
-    if self.operation in ["add", "addu"]:     registers[self.operand0] = registers[self.operand1] + registers[self.operand2]
-    elif self.operation in ["addi", "addiu"]:  registers[self.operand0] = registers[self.operand1] + twoscomp(self.operand2)
-    elif self.operation == "and": registers[self.operand0] = registers[self.operand1] & registers[self.operand2]
-    elif self.operation == "andi": registers[self.operand0] = registers[self.operand1] & twoscomp(self.operand2)
-    elif self.operation == "beq": if registers[self.operand0] == registers[self.operand1]: pass else: pass #needs to branch
-    # TODO
-    else: raise ValueError("Unrecognized instruction: {0}".format(self.operation))
-    return self
 
 
 if __name__ == "__main__":
