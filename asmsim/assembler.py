@@ -34,9 +34,15 @@ class Assembler(object):
       elif instr.operation == "beq":
         if self.registers[instr.operand0] == self.registers[instr.operand1]:
           cur_line = self.labels[instr.operand2]
+      elif instr.operation == "bgez":
+        if self.registers[instr.operand0] >= 0:
+          cur_line = self.labels[instr.operand1]
       elif instr.operation == "bne":
         if self.registers[instr.operand0] != self.registers[instr.operand1]:
           cur_line = self.labels[instr.operand2]
+      elif instr.operation == "bltz":
+        if self.registers[instr.operand0] < 0:
+          cur_line = self.labels[instr.operand1]
       # TODO
       else: raise ValueError("Unrecognized instruction: {0}".format(instr.operation))
       cur_line += 1
