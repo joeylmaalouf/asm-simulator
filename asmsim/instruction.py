@@ -28,7 +28,7 @@ class Instruction(object):
     elif self.operation in ["addi", "addiu"]:  registers[self.operand0] = registers[self.operand1] + twoscomp(self.operand2)
     elif self.operation == "and": registers[self.operand0] = registers[self.operand1] & registers[self.operand2]
     elif self.operation == "andi": registers[self.operand0] = registers[self.operand1] & twoscomp(self.operand2)
-    elif self.operation == "beq": if registers[self.operand0] == registers[self.operand1]: pass else: pass #needs to branch
+    elif self.operation == "beq": if registers[self.operand0] == registers[self.operand1]: curr_line = labels[registers[self.operand2]] else: pass
     # TODO
     else: raise ValueError("Unrecognized instruction: {0}".format(self.operation))
     return self
