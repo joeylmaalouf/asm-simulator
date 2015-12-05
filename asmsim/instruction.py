@@ -26,8 +26,8 @@ class Instruction(object):
     """ Execute the instruction on the given registers. """
     if self.operation in ["add", "addu"]:     registers[self.operand0] = registers[self.operand1] + registers[self.operand2]
     elif self.operation in ["addi", "addiu"]:  registers[self.operand0] = registers[self.operand1] + twoscomp(self.operand2)
-    elif self.operation == "and":   pass
-    elif self.operation == "andi":  pass
+    elif self.operation == "and": registers[self.operand0] = registers[self.operand1] & registers[self.operand2]
+    elif self.operation == "andi":  registers[self.operand0] = registers[self.operand1] & twoscomp(self.operand2)
     # TODO
     else: raise ValueError("Unrecognized instruction: {0}".format(self.operation))
     return self
