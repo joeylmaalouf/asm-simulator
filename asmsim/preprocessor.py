@@ -90,9 +90,9 @@ def preprocess(program_text, mode):
         processed.append(str(instr))
 
       elif mode == "ARM":
+        # TODO
         pass
 
-  # TODO
   return "\n".join(processed)
 
 
