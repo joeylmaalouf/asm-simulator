@@ -96,20 +96,19 @@ class Assembler(object):
         pass # TODO
       elif instr.operation == "sb":
         pass # TODO
-      elif instr.operation == "sll":
-        pass # TODO
-      elif instr.operation == "sllv":
-        pass # TODO
       elif instr.operation in ["slt", "sltu"]:
         pass # TODO
       elif instr.operation in ["slti", "sltiu"]:
         pass # TODO
-      elif instr.operation == "sra":
-        pass # TODO
-      elif instr.operation == "srl":
-        pass # TODO
-      elif instr.operation == "srlv":
-        pass # TODO
+     elif instr.operation == "sll":
+        self.registers[instr.operand0] = self.registers[instr.operand1] << twoscomp(instr.operand2)
+     elif instr.operation == "sllv":
+	      self.registers[instr.operand0] = self.registers[instr.operand1] << self.registers[instr.operand2]
+     elif instr.operation in ["srl","sra"]:
+        self.registers[instr.operand0] = self.registers[instr.operand1] >> twoscomp(instr.operand2)
+     elif instr.operation == "srlv":
+	      self.registers[instr.operand0] = self.registers[instr.operand1] >> self.registers[instr.operand2]
+
       elif instr.operation in ["sub", "subu"]:
         self.registers[instr.operand0] = self.registers[instr.operand1] - self.registers[instr.operand2]
       elif instr.operation == "sw":
