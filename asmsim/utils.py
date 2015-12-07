@@ -1,13 +1,13 @@
-def getval(hexstring, signed = True, bits = 32):
-  if signed: return twoscomp(hexstring, bits)
+def getval(hexstring, signed = True):
+  if signed: return twoscomp(hexstring)
   else:      return int(hexstring, 16)
 
 
-def twoscomp(hexstring, bits = 32):
+def twoscomp(hexstring):
   val = int(hexstring, 16)
-  binstring = "{0:0{1}b}".format(int(hexstring, 16), bits)
+  binstring = "{0:0{1}b}".format(int(hexstring, 16), 32)
   if binstring[0] == "1":
-    val -= (1 << bits)
+    val -= (1 << 32)
   return val
 
 

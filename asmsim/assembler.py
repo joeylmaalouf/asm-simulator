@@ -37,7 +37,7 @@ class Assembler(object):
       elif instr.operation == "and":
         self.registers[instr.operand0] = self.registers[instr.operand1] & self.registers[instr.operand2]
       elif instr.operation == "andi":
-        self.registers[instr.operand0] = self.registers[instr.operand1] & getval(instr.operand2)
+        self.registers[instr.operand0] = self.registers[instr.operand1] & getval(instr.operand2, False)
       elif instr.operation == "beq":
         if self.registers[instr.operand0] == self.registers[instr.operand1]:
           cur_line = self.labels[instr.operand2] # jump straight to the label rather than the following instruction because we increment the line counter at the end anyway
@@ -89,11 +89,11 @@ class Assembler(object):
       elif instr.operation in ["mult", "multu"]:
         LO = self.registers[instr.operand0] * self.registers[inst.operand1]
       elif instr.operation == "nor":
-        pass # TODO
+        self.registers[instr.operand0] = ~(self.registers[instr.operand1] | self.registers[instr.operand2]) & 0b11111111111111111111111111111111
       elif instr.operation == "or":
-        pass # TODO
+        self.registers[instr.operand0] = self.registers[instr.operand1] | self.registers[instr.operand2]
       elif instr.operation == "ori":
-        pass # TODO
+        self.registers[instr.operand0] = self.registers[instr.operand1] | getval(instr.operand2, False)
       elif instr.operation == "sb":
         pass # TODO
       elif instr.operation == "sll":
@@ -117,9 +117,9 @@ class Assembler(object):
       elif instr.operation == "syscall":
         pass # TODO
       elif instr.operation == "xor":
-        pass # TODO
+        self.registers[instr.operand0] = self.registers[instr.operand1] ^ self.registers[instr.operand2]
       elif instr.operation == "xori":
-        pass # TODO
+        self.registers[instr.operand0] = self.registers[instr.operand1] ^ getval(instr.operand2, False)
       # TODO
       else: raise ValueError("Unrecognized instruction: {0}".format(instr.operation))
       cur_line += 1
