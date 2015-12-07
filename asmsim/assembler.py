@@ -33,16 +33,30 @@ class Assembler(object):
       elif instr.operation == "andi":            self.registers[instr.operand0] = self.registers[instr.operand1] & twoscomp(instr.operand2)
       elif instr.operation == "beq":
         if self.registers[instr.operand0] == self.registers[instr.operand1]:
-          cur_line = self.labels[instr.operand2]
+          cur_line = self.labels[instr.operand2] # jump straight to the label rather than the following instruction because we increment the line counter at the end anyway
       elif instr.operation == "bgez":
         if self.registers[instr.operand0] >= 0:
+          cur_line = self.labels[instr.operand1]
+      elif instr.operation == "bgezal":
+        if self.registers[instr.operand0] >= 0:
+          self.registers[31] = cur_line + 1
+          cur_line = self.labels[instr.operand1]
+      elif instr.operation == "bgtz":
+        if self.registers[instr.operand0] > 0:
+          cur_line = self.labels[instr.operand1]
+      elif instr.operation == "blez":
+        if self.registers[instr.operand0] <= 0:
+          cur_line = self.labels[instr.operand1]
+      elif instr.operation == "bltz":
+        if self.registers[instr.operand0] < 0:
+          cur_line = self.labels[instr.operand1]
+      elif instr.operation == "bltzal":
+        if self.registers[instr.operand0] < 0:
+          self.registers[31] = cur_line + 1
           cur_line = self.labels[instr.operand1]
       elif instr.operation == "bne":
         if self.registers[instr.operand0] != self.registers[instr.operand1]:
           cur_line = self.labels[instr.operand2]
-      elif instr.operation == "bltz":
-        if self.registers[instr.operand0] < 0:
-          cur_line = self.labels[instr.operand1]
       # TODO
       else: raise ValueError("Unrecognized instruction: {0}".format(instr.operation))
       cur_line += 1
