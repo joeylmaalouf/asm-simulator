@@ -1,7 +1,7 @@
 from instruction import Instruction
 from preprocessor import label_positions, normalize, preprocess
 from registers import Registers
-from utils import twoscomp
+from utils import getval
 
 
 class Assembler(object):
@@ -28,10 +28,16 @@ class Assembler(object):
     while cur_line < len(self.instructions):
       instr = self.instructions[cur_line]
       if cur_line in self.labels.values(): pass
-      elif instr.operation in ["add", "addu"]:   self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
-      elif instr.operation in ["addi", "addiu"]: self.registers[instr.operand0] = self.registers[instr.operand1] + twoscomp(instr.operand2)
-      elif instr.operation == "and":             self.registers[instr.operand0] = self.registers[instr.operand1] & self.registers[instr.operand2]
-      elif instr.operation == "andi":            self.registers[instr.operand0] = self.registers[instr.operand1] & twoscomp(instr.operand2)
+      elif instr.operation in ["add", "addu"]:
+        self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
+      elif instr.operation == "addi":
+        self.registers[instr.operand0] = self.registers[instr.operand1] + getval(instr.operand2, True)
+      elif instr.operation == "addiu":
+        self.registers[instr.operand0] = self.registers[instr.operand1] + getval(instr.operand2, False)
+      elif instr.operation == "and":
+        self.registers[instr.operand0] = self.registers[instr.operand1] & self.registers[instr.operand2]
+      elif instr.operation == "andi":
+        self.registers[instr.operand0] = self.registers[instr.operand1] & getval(instr.operand2)
       elif instr.operation == "beq":
         if self.registers[instr.operand0] == self.registers[instr.operand1]:
           cur_line = self.labels[instr.operand2] # jump straight to the label rather than the following instruction because we increment the line counter at the end anyway
@@ -105,7 +111,7 @@ class Assembler(object):
       elif instr.operation == "srlv":
         pass # TODO
       elif instr.operation in ["sub", "subu"]:
-        pass # TODO
+        self.registers[instr.operand0] = self.registers[instr.operand1] - self.registers[instr.operand2]
       elif instr.operation == "sw":
         pass # TODO
       elif instr.operation == "syscall":
