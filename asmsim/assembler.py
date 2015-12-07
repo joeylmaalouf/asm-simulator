@@ -23,9 +23,8 @@ class Assembler(object):
 
   def run(self):
     """ Execute the program's instructions, modifying the given registers. """
+    HI, LO = 0, 0
     cur_line = 0
-    HI = 0
-    LO = 0
     while cur_line < len(self.instructions):
       instr = self.instructions[cur_line]
       if cur_line in self.labels.values(): pass
@@ -43,12 +42,14 @@ class Assembler(object):
         if self.registers[instr.operand0] >= 0:
           self.registers[31] = cur_line + 1
           cur_line = self.labels[instr.operand1]
-      elif instr.operation == "bgtz":
-        if self.registers[instr.operand0] > 0:
-          cur_line = self.labels[instr.operand1]
-      elif instr.operation == "blez":
-        if self.registers[instr.operand0] <= 0:
-          cur_line = self.labels[instr.operand1]
+      # already in preprocessor
+      # elif instr.operation == "bgtz":
+      #   if self.registers[instr.operand0] > 0:
+      #     cur_line = self.labels[instr.operand1]
+      # already in preprocessor
+      # elif instr.operation == "blez":
+      #   if self.registers[instr.operand0] <= 0:
+      #     cur_line = self.labels[instr.operand1]
       elif instr.operation == "bltz":
         if self.registers[instr.operand0] < 0:
           cur_line = self.labels[instr.operand1]
@@ -62,13 +63,57 @@ class Assembler(object):
       elif instr.operation in ["div", "divu"]:
         LO = self.registers[instr.operand0] // self.registers[instr.operand1]
         HI = self.registers[instr.operand0] % self.registers[instr.operand1]
+      elif instr.operation == "j":
+        cur_line = self.labels[instr.operand0]
+      elif instr.operation == "jal":
+        self.registers[31] = cur_line + 1
+        cur_line = self.labels[instr.operand0]
+      elif instr.operation == "jr":
+        cur_line = self.registers[instr.operand0]
+      elif instr.operation == "lb":
+        pass # TODO
+      elif instr.operation == "lui":
+        pass # TODO
+      elif instr.operation == "lw":
+        pass # TODO
       elif instr.operation == "mfhi":
-        self.registers[inst.operand0] = HI
+        self.registers[instr.operand0] = HI
       elif instr.operation == "mflo":
         self.registers[instr.operand0] = LO
-      elif instr.operation == "mult":
-        LO = self.registers[instr.operand0]*self.registers[inst.operand1]
-
+      elif instr.operation in ["mult", "multu"]:
+        LO = self.registers[instr.operand0] * self.registers[inst.operand1]
+      elif instr.operation == "nor":
+        pass # TODO
+      elif instr.operation == "or":
+        pass # TODO
+      elif instr.operation == "ori":
+        pass # TODO
+      elif instr.operation == "sb":
+        pass # TODO
+      elif instr.operation == "sll":
+        pass # TODO
+      elif instr.operation == "sllv":
+        pass # TODO
+      elif instr.operation in ["slt", "sltu"]:
+        pass # TODO
+      elif instr.operation in ["slti", "sltiu"]:
+        pass # TODO
+      elif instr.operation == "sra":
+        pass # TODO
+      elif instr.operation == "srl":
+        pass # TODO
+      elif instr.operation == "srlv":
+        pass # TODO
+      elif instr.operation in ["sub", "subu"]:
+        pass # TODO
+      elif instr.operation == "sw":
+        pass # TODO
+      elif instr.operation == "syscall":
+        pass # TODO
+      elif instr.operation == "xor":
+        pass # TODO
+      elif instr.operation == "xori":
+        pass # TODO
       # TODO
       else: raise ValueError("Unrecognized instruction: {0}".format(instr.operation))
       cur_line += 1
