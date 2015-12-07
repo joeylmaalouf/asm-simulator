@@ -87,7 +87,7 @@ class Assembler(object):
       elif instr.operation == "mflo":
         self.registers[instr.operand0] = LO
       elif instr.operation in ["mult", "multu"]:
-        LO = self.registers[instr.operand0] * self.registers[inst.operand1]
+        LO = self.registers[instr.operand0] * self.registers[instr.operand1]
       elif instr.operation == "nor":
         pass # TODO
       elif instr.operation == "or":
@@ -95,7 +95,7 @@ class Assembler(object):
       elif instr.operation == "ori":
         pass # TODO
       elif instr.operation == "sb":
-        pass # TODO
+        self.registers[instr.operand0] = self.registers[instr.operand1][-2:]
       elif instr.operation in ["slt", "sltu"]:
         pass # TODO
       elif instr.operation in ["slti", "sltiu"]:
