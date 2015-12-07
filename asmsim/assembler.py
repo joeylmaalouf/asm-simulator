@@ -87,7 +87,7 @@ class Assembler(object):
       elif instr.operation == "mflo":
         self.registers[instr.operand0] = LO
       elif instr.operation in ["mult", "multu"]:
-        LO = self.registers[instr.operand0] * self.registers[inst.operand1]
+        LO = self.registers[instr.operand0] * self.registers[instr.operand1]
       elif instr.operation == "nor":
         self.registers[instr.operand0] = ~(self.registers[instr.operand1] | self.registers[instr.operand2]) & 0b11111111111111111111111111111111
       elif instr.operation == "or":
@@ -96,20 +96,20 @@ class Assembler(object):
         self.registers[instr.operand0] = self.registers[instr.operand1] | getval(instr.operand2, False)
       elif instr.operation == "sb":
         pass # TODO
-      elif instr.operation == "sll":
-        pass # TODO
-      elif instr.operation == "sllv":
-        pass # TODO
+        #self.registers[instr.operand0] = self.registers[instr.operand1][-2:]
       elif instr.operation in ["slt", "sltu"]:
         pass # TODO
       elif instr.operation in ["slti", "sltiu"]:
         pass # TODO
-      elif instr.operation == "sra":
-        pass # TODO
-      elif instr.operation == "srl":
-        pass # TODO
-      elif instr.operation == "srlv":
-        pass # TODO
+     elif instr.operation == "sll":
+        self.registers[instr.operand0] = self.registers[instr.operand1] << twoscomp(instr.operand2)
+     elif instr.operation == "sllv":
+	      self.registers[instr.operand0] = self.registers[instr.operand1] << self.registers[instr.operand2]
+     elif instr.operation in ["srl","sra"]:
+        self.registers[instr.operand0] = self.registers[instr.operand1] >> twoscomp(instr.operand2)
+     elif instr.operation == "srlv":
+	      self.registers[instr.operand0] = self.registers[instr.operand1] >> self.registers[instr.operand2]
+
       elif instr.operation in ["sub", "subu"]:
         self.registers[instr.operand0] = self.registers[instr.operand1] - self.registers[instr.operand2]
       elif instr.operation == "sw":
