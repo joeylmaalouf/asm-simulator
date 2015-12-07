@@ -96,7 +96,6 @@ class Assembler(object):
         self.registers[instr.operand0] = self.registers[instr.operand1] | getval(instr.operand2, False)
       elif instr.operation == "sb":
         pass # TODO
-        #self.registers[instr.operand0] = self.registers[instr.operand1][-2:]
       elif instr.operation in ["slt", "sltu"]:
         pass # TODO
       elif instr.operation in ["slti", "sltiu"]:
@@ -105,11 +104,12 @@ class Assembler(object):
         self.registers[instr.operand0] = self.registers[instr.operand1] << getval(instr.operand2, False)
      elif instr.operation == "sllv":
 	      self.registers[instr.operand0] = self.registers[instr.operand1] << self.registers[instr.operand2]
-     elif instr.operation in ["srl", "sra"]:
+     elif instr.operation == "sra":
+        self.registers[instr.operand0] = self.registers[instr.operand1] >> getval(instr.operand2, True)
+     elif instr.operation == "srl":
         self.registers[instr.operand0] = self.registers[instr.operand1] >> getval(instr.operand2, False)
      elif instr.operation == "srlv":
 	      self.registers[instr.operand0] = self.registers[instr.operand1] >> self.registers[instr.operand2]
-
       elif instr.operation in ["sub", "subu"]:
         self.registers[instr.operand0] = self.registers[instr.operand1] - self.registers[instr.operand2]
       elif instr.operation == "sw":
@@ -120,7 +120,6 @@ class Assembler(object):
         self.registers[instr.operand0] = self.registers[instr.operand1] ^ self.registers[instr.operand2]
       elif instr.operation == "xori":
         self.registers[instr.operand0] = self.registers[instr.operand1] ^ getval(instr.operand2, False)
-      # TODO
       else: raise ValueError("Unrecognized instruction: {0}".format(instr.operation))
       cur_line += 1
     return self
