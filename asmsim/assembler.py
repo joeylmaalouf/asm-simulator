@@ -102,11 +102,11 @@ class Assembler(object):
       elif instr.operation in ["slti", "sltiu"]:
         pass # TODO
      elif instr.operation == "sll":
-        self.registers[instr.operand0] = self.registers[instr.operand1] << twoscomp(instr.operand2)
+        self.registers[instr.operand0] = self.registers[instr.operand1] << getval(instr.operand2, False)
      elif instr.operation == "sllv":
 	      self.registers[instr.operand0] = self.registers[instr.operand1] << self.registers[instr.operand2]
-     elif instr.operation in ["srl","sra"]:
-        self.registers[instr.operand0] = self.registers[instr.operand1] >> twoscomp(instr.operand2)
+     elif instr.operation in ["srl", "sra"]:
+        self.registers[instr.operand0] = self.registers[instr.operand1] >> getval(instr.operand2, False)
      elif instr.operation == "srlv":
 	      self.registers[instr.operand0] = self.registers[instr.operand1] >> self.registers[instr.operand2]
 
