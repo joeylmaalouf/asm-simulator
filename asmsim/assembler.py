@@ -95,7 +95,8 @@ class Assembler(object):
       elif instr.operation == "ori":
         pass # TODO
       elif instr.operation == "sb":
-        self.registers[instr.operand0] = self.registers[instr.operand1][-2:]
+        pass # TODO
+        #self.registers[instr.operand0] = self.registers[instr.operand1][-2:]
       elif instr.operation in ["slt", "sltu"]:
         pass # TODO
       elif instr.operation in ["slti", "sltiu"]:
