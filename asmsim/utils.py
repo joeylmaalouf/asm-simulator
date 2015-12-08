@@ -1,3 +1,4 @@
+import time
 def getval(hexstring, signed = True):
   if signed: return twoscomp(hexstring)
   else:      return int(hexstring, 16)
