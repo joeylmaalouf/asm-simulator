@@ -49,7 +49,7 @@ def syscall(v0):
   elif v0 == 31:
     pass
   elif v0 == 32:
-    sleep(a0*.001)
+    time.sleep(a0*.001)
   elif v0 == 33:
     pass
   elif v0 == 34:
