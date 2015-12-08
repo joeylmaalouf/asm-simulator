@@ -117,7 +117,8 @@ class Assembler(object):
       elif instr.operation == "sw":
         pass # TODO
       elif instr.operation == "syscall":
-        syscall(self.registers[2])
+         retval = syscall(self.registers[2])
+         if retval: break
       elif instr.operation == "xor":
         self.registers[instr.operand0] = self.registers[instr.operand1] ^ self.registers[instr.operand2]
       elif instr.operation == "xori":
