@@ -97,9 +97,11 @@ class Assembler(object):
       elif instr.operation == "sb":
         pass # TODO
       elif instr.operation in ["slt", "sltu"]:
-        pass # TODO
+        if self.registers[instr.operand1] < self.registers[instr.operand2]:
+          self.registers[instr.operand0] = 1
       elif instr.operation in ["slti", "sltiu"]:
-        pass # TODO
+        if self.registers[instr.operand1] < getval(instr.operand2, False):
+          self.registers[instr.operand0] = 1
      elif instr.operation == "sll":
         self.registers[instr.operand0] = self.registers[instr.operand1] << getval(instr.operand2, False)
      elif instr.operation == "sllv":
