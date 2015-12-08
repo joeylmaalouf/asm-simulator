@@ -29,7 +29,7 @@ def syscall(v0):
   elif v0 == 9:
     pass
   elif v0 == 10:
-    pass
+    return True
   elif v0 == 11:
     pass
   elif v0 == 12:
@@ -49,7 +49,7 @@ def syscall(v0):
   elif v0 == 31:
     pass
   elif v0 == 32:
-    pass
+    sleep(a0*.001)
   elif v0 == 33:
     pass
   elif v0 == 34:
