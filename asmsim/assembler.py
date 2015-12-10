@@ -126,7 +126,18 @@ class Assembler(object):
       else: raise ValueError("Unrecognized instruction: {0}".format(instr.operation))
       cur_line += 1
     return self
-
+  
+  def runARM(self):
+    if instr.operation == "add":
+      self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
+    elif instr.operation == "addeq":
+      if zero:
+        self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
+    elif instr.operation == "adds":
+      self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
+      #also sets conditional flags?
+  
+  
   def display(self):
     """ Print the assembler mode and its register values. """
     print("{0}\nRegister Values:\n{1}".format(self, self.registers))
