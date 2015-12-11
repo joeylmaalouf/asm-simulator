@@ -1,10 +1,34 @@
-## asm-simulator
-MIPS assembly code simulation in Python
+# asm-simulator
+MIPS assembly code simulation in Python.
 
-# Use:
-To run assembly:
-- Write instructions as a string, separated by "\n", and initialize and Assembler object with that argument.
-- Or, you can write the assembly line by line in a text file, and call Assembler with the file object
 
-# Why?
-We were interested in better understanding the way that assembly instructions and pseudo-instructions work, separate from their machines. 
+### Usage:
+Assembly code in a separate file:
+```python
+if __name__ == "__main__":
+  from asmsim.assembler import Assembler
+  f = open("program.asm", "r")
+  a = Assembler(f, "MIPS")
+  a.run()
+```
+
+Assembly code in the program itself:
+```python
+if __name__ == "__main__":
+  from asmsim.assembler import Assembler
+  program = """
+li $t0, 2
+li $t1, 2
+add $t2, $t0, $t1
+"""
+  a = Assembler(program, "MIPS")
+  a.run()
+```
+
+
+### Why?
+We were interested in better understanding assembly (pseudo-)instructions. Done for Olin Computer Architecture, Fall 2015.
+
+### TODO:
+* .data and .text section parsing for MIPS
+* ARM

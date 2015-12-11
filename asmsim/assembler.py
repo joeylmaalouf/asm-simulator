@@ -22,6 +22,14 @@ class Assembler(object):
     return "{0} Assembler".format(self.mode)
 
   def run(self):
+    if self.mode == "MIPS":
+      return self.runMIPS()
+    elif self.mode == "ARM":
+      return self.runARM()
+    else:
+      raise ValueError("Invalid mode: {0}".format(self.mode))
+
+  def runMIPS(self):
     """ Execute the program's instructions, modifying the given registers. """
     HI, LO = 0, 0
     cur_line = 0
