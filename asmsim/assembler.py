@@ -1,7 +1,7 @@
 from instruction import Instruction
 from preprocessor import label_positions, normalize, preprocess
 from registers import Registers
-from utils import getval, syscall
+from utils import getval, parseaddress, syscall
 
 
 class Assembler(object):
@@ -22,6 +22,7 @@ class Assembler(object):
     return "{0} Assembler".format(self.mode)
 
   def run(self):
+    """ Execute the program's instructions, modifying the given registers. """
     if self.mode == "MIPS":
       return self.runMIPS()
     elif self.mode == "ARM":
@@ -30,9 +31,10 @@ class Assembler(object):
       raise ValueError("Invalid mode: {0}".format(self.mode))
 
   def runMIPS(self):
-    """ Execute the program's instructions, modifying the given registers. """
+    """ Execute the program using the MIPS instruction set. """
     HI, LO = 0, 0
     cur_line = 0
+    memory = {}
     while cur_line < len(self.instructions):
       instr = self.instructions[cur_line]
       if cur_line in self.labels.values(): pass
@@ -85,7 +87,9 @@ class Assembler(object):
       elif instr.operation == "jr":
         cur_line = self.registers[instr.operand0]
       elif instr.operation == "lb":
-        pass # TODO
+        register, offset = parseaddress(instr.operand1)
+        address = self.registers[register] if register in self.registers else getval(register, False)
+        self.registers[instr.operand0] = memory[address + getval(offset, True)]
       elif instr.operation == "lui":
         pass # TODO
       elif instr.operation == "lw":
@@ -97,13 +101,15 @@ class Assembler(object):
       elif instr.operation in ["mult", "multu"]:
         LO = self.registers[instr.operand0] * self.registers[instr.operand1]
       elif instr.operation == "nor":
-        self.registers[instr.operand0] = ~(self.registers[instr.operand1] | self.registers[instr.operand2]) & 0b11111111111111111111111111111111
+        self.registers[instr.operand0] = ~(self.registers[instr.operand1] | self.registers[instr.operand2]) & 0xFFFFFFFF
       elif instr.operation == "or":
         self.registers[instr.operand0] = self.registers[instr.operand1] | self.registers[instr.operand2]
       elif instr.operation == "ori":
         self.registers[instr.operand0] = self.registers[instr.operand1] | getval(instr.operand2, False)
       elif instr.operation == "sb":
-        pass # TODO
+        register, offset = parseaddress(instr.operand1)
+        address = self.registers[register] if register in self.registers else getval(register, False)
+        memory[address + getval(offset, True)] = self.registers[instr.operand0] & 0xFF
       elif instr.operation in ["slt", "sltu"]:
         if self.registers[instr.operand1] < self.registers[instr.operand2]:
           self.registers[instr.operand0] = 1
@@ -123,7 +129,9 @@ class Assembler(object):
       elif instr.operation in ["sub", "subu"]:
         self.registers[instr.operand0] = self.registers[instr.operand1] - self.registers[instr.operand2]
       elif instr.operation == "sw":
-        pass # TODO
+        register, offset = parseaddress(instr.operand1)
+        address = self.registers[register] if register in self.registers else getval(register, False)
+        memory[address + getval(offset, True)] = self.registers[instr.operand0]
       elif instr.operation == "syscall":
          retval = syscall(self.registers[2])
          if retval: break
@@ -136,6 +144,7 @@ class Assembler(object):
     return self
   
   def runARM(self):
+    """ Execute the program using the ARM instruction set. """
     if instr.operation == "add":
       self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
     elif instr.operation == "addeq":
@@ -153,6 +162,15 @@ class Assembler(object):
 
 
 if __name__ == "__main__":
-  asm = Assembler("li $t1, 0x5\nadder:\naddi $t0, $t0, 0x1\nbne $t0, $t1, adder\nend:", "MIPS")
+  program = """
+  li $t1, 0x5
+  adder:
+  addi $t0, $t0, 0x1
+  bne $t0, $t1, adder
+  end:
+  sb $t1, A
+  lb $t2, A
+  """
+  asm = Assembler(program, "MIPS")
   asm.run()
   asm.display()

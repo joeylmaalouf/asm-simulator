@@ -1,15 +1,40 @@
 import time
+from modes import mode_dict
+
+
 def getval(hexstring, signed = True):
+  """ Get the value of the inputted hex string based on whether or not the input is signed. """
   if signed: return twoscomp(hexstring)
   else:      return int(hexstring, 16)
 
 
 def twoscomp(hexstring):
+  """ Return the two's complement value of a hex string. """
   val = int(hexstring, 16)
   binstring = "{0:0{1}b}".format(int(hexstring, 16), 32)
   if binstring[0] == "1":
     val -= (1 << 32)
   return val
+
+
+def parseaddress(hexstring):
+  """ Parse a register/offset string for its individual values. """
+  leftpars, rightpars = hexstring.count("("), hexstring.count(")")
+  if leftpars == 1 and rightpars == 1:
+    offset, register = hexstring.replace(")", "").split("(")
+    for d in mode_dict.values():
+      if offset in d:
+        register, offset = offset, register
+        break
+    if offset == "":
+      offset = "0"
+    return register, offset
+  elif leftpars == 0 and rightpars == 0:
+    return hexstring, "0"
+  elif leftpars != rightpars:
+    raise ValueError("Unbalanced parentheses: {0}".format(hexstring))
+  else:
+    raise ValueError("More than one pair of parentheses: {0}".format(hexstring))
 
 
 def syscall(v0):
@@ -103,3 +128,9 @@ if __name__ == "__main__":
   print(getval("7FFFFFFF", False))
   print(getval("80000000", False))
   print(getval("FFFFFFFF", False))
+  print("")
+  print(parseaddress("A($t0)"))
+  print(parseaddress("$t0(A)"))
+  print(parseaddress("($t0)"))
+  print(parseaddress("$t0"))
+  print(parseaddress("0"))
