@@ -1,5 +1,5 @@
 # asm-simulator
-MIPS assembly code simulation in Python.
+Assembly code simulation in Python. Done for Olin Computer Architecture, Fall 2015.
 
 
 ### Usage:
@@ -10,6 +10,7 @@ if __name__ == "__main__":
   f = open("program.asm", "r")
   a = Assembler(f, "MIPS")
   a.run()
+  a.display()
 ```
 
 Assembly code in the program itself:
@@ -17,18 +18,20 @@ Assembly code in the program itself:
 if __name__ == "__main__":
   from asmsim.assembler import Assembler
   program = """
-li $t0, 2
-li $t1, 2
-add $t2, $t0, $t1
-"""
+  li $t0, 2
+  li $t1, 2
+  add $t2, $t0, $t1
+  """
   a = Assembler(program, "MIPS")
   a.run()
+  a.display()
 ```
 
 
 ### Why?
-We were interested in better understanding assembly (pseudo-)instructions. Done for Olin Computer Architecture, Fall 2015.
+We wanted to learn more about assembly, especially how different asm languages/architectures parse and execute instructions.
 
 ### TODO:
+* data memory for MIPS
 * .data and .text section parsing for MIPS
 * ARM
