@@ -32,6 +32,5 @@ if __name__ == "__main__":
 We wanted to learn more about assembly, especially how different asm languages/architectures parse and execute instructions.
 
 ### TODO:
-* data memory for MIPS
 * .data and .text section parsing for MIPS
 * ARM

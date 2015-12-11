@@ -86,14 +86,12 @@ class Assembler(object):
         cur_line = self.labels[instr.operand0]
       elif instr.operation == "jr":
         cur_line = self.registers[instr.operand0]
-      elif instr.operation == "lb":
+      elif instr.operation in ["lb", "lw"]:
         register, offset = parseaddress(instr.operand1)
         address = self.registers[register] if register in self.registers else getval(register, False)
         self.registers[instr.operand0] = memory[address + getval(offset, True)]
       elif instr.operation == "lui":
-        pass # TODO
-      elif instr.operation == "lw":
-        pass # TODO
+        self.registers[instr.operand0] = getval(instr.operand1, False) << 16
       elif instr.operation == "mfhi":
         self.registers[instr.operand0] = HI
       elif instr.operation == "mflo":
