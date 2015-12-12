@@ -91,7 +91,7 @@ class Assembler(object):
         cur_line = self.registers[instr.operand0]
       elif instr.operation in ["lb", "lw"]:
         register, offset = parseaddress(instr.operand1)
-        address = self.registers[register] if register in self.registers else getval(register, False)
+        address = self.registers[register] if register in self.registers.conversion else getval(register, False)
         self.registers[instr.operand0] = self.memory[address + getval(offset, True)]
       elif instr.operation == "lui":
         self.registers[instr.operand0] = getval(instr.operand1, False) << 16
@@ -109,7 +109,7 @@ class Assembler(object):
         self.registers[instr.operand0] = self.registers[instr.operand1] | getval(instr.operand2, False)
       elif instr.operation == "sb":
         register, offset = parseaddress(instr.operand1)
-        address = self.registers[register] if register in self.registers else getval(register, False)
+        address = self.registers[register] if register in self.registers.conversion else getval(register, False)
         self.memory[address + getval(offset, True)] = self.registers[instr.operand0] & 0xFF
       elif instr.operation in ["slt", "sltu"]:
         if self.registers[instr.operand1] < self.registers[instr.operand2]:
@@ -131,7 +131,7 @@ class Assembler(object):
         self.registers[instr.operand0] = self.registers[instr.operand1] - self.registers[instr.operand2]
       elif instr.operation == "sw":
         register, offset = parseaddress(instr.operand1)
-        address = self.registers[register] if register in self.registers else getval(register, False)
+        address = self.registers[register] if register in self.registers.conversion else getval(register, False)
         self.memory[address + getval(offset, True)] = self.registers[instr.operand0]
       elif instr.operation == "syscall":
          retval = syscall(self.registers[2])
@@ -166,9 +166,9 @@ if __name__ == "__main__":
   program = """
   .data
   .text
-  li $t1, 0x5
+  li $t1, 5
   adder:
-  addi $t0, $t0, 0x1
+  addi $t0, $t0, 1
   bne $t0, $t1, adder
   end:
   sb $t1, A
