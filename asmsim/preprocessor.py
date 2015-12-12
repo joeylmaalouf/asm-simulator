@@ -2,14 +2,22 @@ from instruction import Instruction
 from utils import num_lower, num_upper
 
 
-def clean(program_lines):
-  return [line.strip() for line in program_lines if line.strip()]
+def clean(lines):
+  """ Strips extra whitespace and remove comments. """
+  cleaned = []
+  for line in lines:
+    l = line.strip().split("#")[0].strip()
+    if l: cleaned.append(l)
+  return cleaned
 
 
-def split_sections(program_lines):
+def split_sections(lines):
+  """ Splits the text and data sections of the code. """
+  if ".text" not in [l.lower() for l in lines] and ".data" not in [l.lower() for l in lines]:
+    return lines, [] # they didn't specify sections, so we assume it's all text
   text, data = [], []
   in_text, in_data = False, False
-  for line in program_lines:
+  for line in lines:
     if line[0] == ".":
       if   line.lower() == ".text": in_text, in_data = True, False
       elif line.lower() == ".data": in_text, in_data = False, True
@@ -19,14 +27,14 @@ def split_sections(program_lines):
   return text, data
 
 
-def preprocess(program_lines, mode):
+def preprocess(lines, mode):
   """ Goes through our instruction list and replaces any
   pseudo-instructions with actual instructions. Differs
   from the standard MIPS assembler in that we keep register
   keywords ($zero instead of converting to $0) and that we
-  don't change all numbers to decimal (we assume all hex). """
+  don't change all numbers to decimal (we assume hex). """
   processed = []
-  for line in program_lines:
+  for line in lines:
     instr = Instruction(line)
 
     if mode == "MIPS":
@@ -107,11 +115,11 @@ def preprocess(program_lines, mode):
   return processed
 
 
-def label_positions(program_lines):
+def label_positions(lines):
   """ Creates a dict of label positions for use in jumping and branching. """
   labels = {}
   cur_line = 0
-  for line in program_lines:
+  for line in lines:
     word = line.split(" ")[0]
     if word[-1] == ":":
       labels[word[:-1]] = cur_line

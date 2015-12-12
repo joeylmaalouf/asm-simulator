@@ -1,6 +1,13 @@
-noop # add every instruction eventually
-mov $t0, $zero
-clear $t0
-not $t0, $t0
-li $t1, 5
-li $t2, 0x3BF20
+# Looping program
+
+.data
+numiter: .byte 0x05 # the total number of iterations to go through
+
+.text
+main:
+  li $t1, 5
+addloop:
+  addi $t0, $t0, 1
+  bne $t0, $t1, addloop
+endloop:
+# The end!

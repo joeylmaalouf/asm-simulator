@@ -160,13 +160,11 @@ class Assembler(object):
 
 if __name__ == "__main__":
   program = """
-  .data
-  .text
   li $t1, 5
-  adder:
+  addloop:
   addi $t0, $t0, 1
-  bne $t0, $t1, adder
-  end:
+  bne $t0, $t1, addloop
+  endloop:
   sb $t1, A
   lb $t2, A
   """
