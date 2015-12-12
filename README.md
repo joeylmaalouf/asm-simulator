@@ -33,7 +33,7 @@ We wanted to learn more about assembly, especially how different asm languages/a
 
 
 ### TODO:
-* MIPS: .data section parsing and insertion into memory, separate la from li
+* MIPS: .data section parsing and insertion into memory
 * ARM: everything
 
 

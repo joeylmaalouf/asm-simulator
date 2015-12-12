@@ -38,7 +38,7 @@ def preprocess(program_lines, mode):
         instr.update("add", instr.operand0, "$zero", "$zero")
       elif instr.operation == "not":
         instr.update("nor", instr.operand0, instr.operand1, "$zero")
-      elif instr.operation == "la" or instr.operation == "li":
+      elif instr.operation == "li":
         val = int(instr.operand1, 16)
         if val < 65536:
           instr.update("addiu", instr.operand0, "$zero", instr.operand1)

@@ -61,14 +61,6 @@ class Assembler(object):
         if self.registers[instr.operand0] >= 0:
           self.registers[31] = cur_line + 1
           cur_line = self.labels[instr.operand1]
-      # already in preprocessor
-      # elif instr.operation == "bgtz":
-      #   if self.registers[instr.operand0] > 0:
-      #     cur_line = self.labels[instr.operand1]
-      # already in preprocessor
-      # elif instr.operation == "blez":
-      #   if self.registers[instr.operand0] <= 0:
-      #     cur_line = self.labels[instr.operand1]
       elif instr.operation == "bltz":
         if self.registers[instr.operand0] < 0:
           cur_line = self.labels[instr.operand1]
@@ -89,6 +81,8 @@ class Assembler(object):
         cur_line = self.labels[instr.operand0]
       elif instr.operation == "jr":
         cur_line = self.registers[instr.operand0]
+      elif instr.operation == "la":
+        self.registers[instr.operand0] = instr.operand1 # since our memory is a dict, the labels are the addresses
       elif instr.operation in ["lb", "lw"]:
         register, offset = parseaddress(instr.operand1)
         address = self.registers[register] if register in self.registers.conversion else getval(register, False)
@@ -140,6 +134,8 @@ class Assembler(object):
         self.registers[instr.operand0] = self.registers[instr.operand1] ^ self.registers[instr.operand2]
       elif instr.operation == "xori":
         self.registers[instr.operand0] = self.registers[instr.operand1] ^ getval(instr.operand2, False)
+      elif instr.operation == "break":
+        break
       else: raise ValueError("Unrecognized instruction: {0}".format(instr.operation))
       cur_line += 1
     return self
@@ -153,7 +149,7 @@ class Assembler(object):
         self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
     elif instr.operation == "adds":
       self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
-      #also sets conditional flags?
+      # also sets conditional flags?
   
   
   def display(self):
