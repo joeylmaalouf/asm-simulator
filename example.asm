@@ -1,13 +1,18 @@
 # Looping program
+# for (i = initial; i < final; i += increment){}
 
 .data
-numiter: .byte 0x05 # the total number of iterations to go through
+initial: .byte 0x00 # the loop counter's starting value
+increment: .byte 0x01 # the number by which we increment the counter
+final: .byte 0x05 # the value at which to stop
 
 .text
 main:
-  li $t1, 5
+  li $t0, 0
+  li $t1, 1
+  li $t2, 5
 addloop:
-  addi $t0, $t0, 1
-  bne $t0, $t1, addloop
+  add $t0, $t0, $t1
+  blt $t0, $t2, addloop
 endloop:
 # The end!

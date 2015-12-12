@@ -1,4 +1,5 @@
 from instruction import Instruction
+from memory import Memory
 from preprocessor import clean, label_positions, preprocess, split_sections
 from registers import Registers
 from utils import getval, parseaddress, syscall
@@ -15,8 +16,9 @@ class Assembler(object):
     lines = text.split("\n")
     lines = clean(lines)
     instrs, data = split_sections(lines)
-    # TODO: put data in memory, different based on mode
-    self.memory = {}
+    self.memory = Memory()
+    for d in data:
+      self.memory.insert(d)
     instrs = preprocess(instrs, self.mode)
     self.labels = label_positions(instrs)
     self.instructions = [Instruction(instr) for instr in instrs]
@@ -82,7 +84,7 @@ class Assembler(object):
       elif instr.operation == "jr":
         cur_line = self.registers[instr.operand0]
       elif instr.operation == "la":
-        self.registers[instr.operand0] = instr.operand1 # since our memory is a dict, the labels are the addresses
+        self.registers[instr.operand0] = instr.operand1 # since our memory is basically a dict, the labels are the addresses
       elif instr.operation in ["lb", "lw"]:
         register, offset = parseaddress(instr.operand1)
         address = self.registers[register] if register in self.registers.conversion else getval(register, False)
@@ -106,11 +108,11 @@ class Assembler(object):
         address = self.registers[register] if register in self.registers.conversion else getval(register, False)
         self.memory[address + getval(offset, True)] = self.registers[instr.operand0] & 0xFF
       elif instr.operation in ["slt", "sltu"]:
-        if self.registers[instr.operand1] < self.registers[instr.operand2]:
-          self.registers[instr.operand0] = 1
-      elif instr.operation in ["slti", "sltiu"]:
-        if self.registers[instr.operand1] < getval(instr.operand2, False):
-          self.registers[instr.operand0] = 1
+        self.registers[instr.operand0] = int(self.registers[instr.operand1] < self.registers[instr.operand2])
+      elif instr.operation == "slti":
+        self.registers[instr.operand0] = int(self.registers[instr.operand1] < getval(instr.operand2, True))
+      elif instr.operation == "sltiu":
+        self.registers[instr.operand0] = int(self.registers[instr.operand1] < getval(instr.operand2, False))
       elif instr.operation == "sll":
         self.registers[instr.operand0] = self.registers[instr.operand1] << getval(instr.operand2, False)
       elif instr.operation == "sllv":

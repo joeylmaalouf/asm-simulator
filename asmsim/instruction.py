@@ -14,6 +14,7 @@ class Instruction(object):
     return "{0} {1}".format(self.operation, ", ".join([v for v in [self.operand0, self.operand1, self.operand2] if v is not None]))
 
   def update(self, operation, operand0, operand1, operand2):
+    """ Update the instruction's attributes all at once. """
     self.operation = operation
     self.operand0 = operand0
     self.operand1 = operand1
