@@ -31,6 +31,13 @@ if __name__ == "__main__":
 ### Why?
 We wanted to learn more about assembly, especially how different asm languages/architectures parse and execute instructions.
 
+
 ### TODO:
-* .data and .text section parsing for MIPS
-* ARM
+* MIPS: .data section parsing and insertion into memory
+* ARM: everything
+
+
+### References:
+* http://www.mrc.uidaho.edu/mrc/people/jff/digital/MIPSir.html
+* https://en.wikipedia.org/wiki/MIPS_instruction_set#Pseudo_instructions
+* http://www.cs.umd.edu/class/sum2003/cmsc311/Notes/Mips/dataseg.html
