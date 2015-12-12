@@ -2,6 +2,16 @@ import time
 from modes import mode_dict
 
 
+def num_upper(val):
+  """ Get a hex string of the upper 16 bits in a 32 bit number. """
+  return hex(int(bin(val)[:-16], 2))
+
+
+def num_lower(val):
+  """ Get a hex string of the lower 16 bits in a 32 bit number. """
+  return hex(int(bin(val)[-16:], 2))
+
+
 def getval(hexstring, signed = True):
   """ Get the value of the inputted hex string based on whether or not the input is signed. """
   if signed: return twoscomp(hexstring)

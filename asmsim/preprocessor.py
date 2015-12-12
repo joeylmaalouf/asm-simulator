@@ -1,10 +1,5 @@
 from instruction import Instruction
-
-
-""" Get a hex string of the upper 16 bits in a 32 bit number. """
-upper = lambda val: hex(int(bin(val)[:-16], 2))
-""" Get a hex string of the lower 16 bits in a 32 bit number. """
-lower = lambda val: hex(int(bin(val)[-16:], 2))
+from utils import num_lower, num_upper
 
 
 def preprocess(program_text, mode):
@@ -32,9 +27,9 @@ def preprocess(program_text, mode):
           if val < 65536:
             instr.update("addiu", instr.operand0, "$zero", instr.operand1)
           else:
-            instr.update("lui", instr.operand0, upper(val), instr.operand2)
+            instr.update("lui", instr.operand0, num_upper(val), instr.operand2)
             processed.append(str(instr))
-            instr.update("ori", instr.operand0, instr.operand0, lower(val))
+            instr.update("ori", instr.operand0, instr.operand0, num_lower(val))
         elif instr.operation == "bge":
           label = instr.operand2
           instr.update("slt", "$at", instr.operand0, instr.operand1)
@@ -114,4 +109,4 @@ if __name__ == "__main__":
   example = "text:\nli $t1, 5\nli $t2, 0x3BF20\n"
   print(example)
   print(preprocess(example, "MIPS"))
-  print(label_positions(preprocess(example, "MIPS"), "MIPS"))
+  print(label_positions(preprocess(example, "MIPS")))
