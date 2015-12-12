@@ -1,5 +1,5 @@
 from instruction import Instruction
-from preprocessor import label_positions, preprocess
+from preprocessor import clean, label_positions, preprocess
 from registers import Registers
 from utils import getval, parseaddress, syscall
 
@@ -12,9 +12,11 @@ class Assembler(object):
     self.registers = Registers(self.mode)
     try:                   program_text = program.read()
     except AttributeError: program_text = program
-    program_text = preprocess(program_text, self.mode)
-    self.labels = label_positions(program_text)
-    self.instructions = [Instruction(line) for line in program_text.split("\n") if line.strip()]
+    program_lines = program_text.split("\n")
+    program_lines = clean(program_lines)
+    program_lines = preprocess(program_lines, self.mode)
+    self.labels = label_positions(program_lines)
+    self.instructions = [Instruction(line) for line in program_lines]
 
   def __str__(self):
     """ String representation of the assembler. """
