@@ -18,7 +18,7 @@ class Registers(object):
     return "\n".join(str(d) for d in self.data)
 
   def __getitem__(self, key):
-    """ Indexes directly if key is an int, or via the conversion dict if it's a string. """
+    """ Index directly if key is an int, or via the conversion dict if it's a string. """
     if type(key) == int:
       return self.data[key]
     elif type(key) == str:
@@ -27,7 +27,7 @@ class Registers(object):
       raise ValueError("Register must be accessed at an integer or a keyword string. Invalid key: {0}".format(key))
 
   def __setitem__(self, key, value):
-    """ Indexes directly if key is an int, or via the conversion dict if it's a string. """
+    """ Index directly if key is an int, or via the conversion dict if it's a string. """
     if type(key) == int:
       self.data[key] = value
     elif type(key) == str:

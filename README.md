@@ -10,7 +10,6 @@ if __name__ == "__main__":
   f = open("program.asm", "r")
   a = Assembler(f, "MIPS")
   a.run()
-  a.display()
 ```
 
 Assembly code in the program itself:
@@ -24,7 +23,6 @@ if __name__ == "__main__":
   """
   a = Assembler(program, "MIPS")
   a.run()
-  a.display()
 ```
 
 
@@ -33,7 +31,7 @@ We wanted to learn more about assembly, especially how different asm languages/a
 
 
 ### TODO:
-* MIPS: .data section parsing and insertion into memory
+* MIPS: pretty much nothing left! maybe make it so values can be spread across multiple lines in .data?
 * ARM: everything
 
 

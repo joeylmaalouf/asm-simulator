@@ -12,7 +12,7 @@ def clean(lines):
 
 
 def split_sections(lines):
-  """ Splits the text and data sections of the code. """
+  """ Split the text and data sections of the code. """
   if ".text" not in [l.lower() for l in lines] and ".data" not in [l.lower() for l in lines]:
     return lines, [] # they didn't specify sections, so we assume it's all text
   text, data = [], []
@@ -28,7 +28,7 @@ def split_sections(lines):
 
 
 def preprocess(lines, mode):
-  """ Goes through our instruction list and replaces any
+  """ Go through our instruction list and replaces any
   pseudo-instructions with actual instructions. Differs
   from the standard MIPS assembler in that we keep register
   keywords ($zero instead of converting to $0) and that we
@@ -116,7 +116,7 @@ def preprocess(lines, mode):
 
 
 def label_positions(lines):
-  """ Creates a dict of label positions for use in jumping and branching. """
+  """ Create a dict of label positions for use in jumping and branching. """
   labels = {}
   cur_line = 0
   for line in lines:

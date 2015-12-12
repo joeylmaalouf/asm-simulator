@@ -1,5 +1,4 @@
 import time
-from modes import mode_dict
 
 
 def num_upper(val):
@@ -28,23 +27,27 @@ def twoscomp(hexstring):
 
 
 def parseaddress(hexstring):
-  """ Parse a register/offset string for its individual values. """
+  """ Parse an address/offset string for its individual values. """
   leftpars, rightpars = hexstring.count("("), hexstring.count(")")
   if leftpars == 1 and rightpars == 1:
-    offset, register = hexstring.replace(")", "").split("(")
-    for d in mode_dict.values():
-      if offset in d:
-        register, offset = offset, register
-        break
-    if offset == "":
-      offset = "0"
-    return register, offset
+    outside, inside = hexstring.replace(")", "").split("(")
+    if outside == "": outside = "0"
+    if inside == "":  inside = "0"
+    return outside, inside
   elif leftpars == 0 and rightpars == 0:
     return hexstring, "0"
   elif leftpars != rightpars:
     raise ValueError("Unbalanced parentheses: {0}".format(hexstring))
   else:
     raise ValueError("More than one pair of parentheses: {0}".format(hexstring))
+
+
+def calcval(value, assembler):
+  """ Determine whether a value is a data label, register,
+  or number address, and return the corresponding value. """
+  if value in assembler.memory.labels:          return assembler.memory.labels[value]
+  elif value in assembler.registers.conversion: return assembler.registers[value]
+  else:                                         return getval(value, True)
 
 
 def syscall(v0):

@@ -2,7 +2,7 @@ from instruction import Instruction
 from memory import Memory
 from preprocessor import clean, label_positions, preprocess, split_sections
 from registers import Registers
-from utils import getval, parseaddress, syscall
+from utils import calcval, getval, parseaddress, syscall
 
 
 class Assembler(object):
@@ -85,12 +85,9 @@ class Assembler(object):
       elif instr.operation == "la":
         self.registers[instr.operand0] = self.memory.labels[instr.operand1]
       elif instr.operation in ["lb", "lw"]:
-        address, offset = parseaddress(instr.operand1)
-        if offset in self.memory.labels: address, offset = offset, address
-        if address in self.memory.labels:          address = self.memory.labels[address]
-        elif address in self.registers.conversion: address = self.registers[address]
-        else:                                      address = getval(address, False)
-        self.registers[instr.operand0] = self.memory[address + getval(offset, True)]
+        outside, inside = parseaddress(instr.operand1)
+        address = calcval(outside, self) + calcval(inside, self)
+        self.registers[instr.operand0] = self.memory[address]
       elif instr.operation == "lui":
         self.registers[instr.operand0] = getval(instr.operand1, False) << 16
       elif instr.operation == "mfhi":
@@ -106,12 +103,9 @@ class Assembler(object):
       elif instr.operation == "ori":
         self.registers[instr.operand0] = self.registers[instr.operand1] | getval(instr.operand2, False)
       elif instr.operation == "sb":
-        address, offset = parseaddress(instr.operand1)
-        if offset in self.memory.labels: address, offset = offset, address
-        if address in self.memory.labels:          address = self.memory.labels[address]
-        elif address in self.registers.conversion: address = self.registers[address]
-        else:                                      address = getval(address, False)
-        self.memory[address + getval(offset, True)] = self.registers[instr.operand0] & 0xFF
+        outside, inside = parseaddress(instr.operand1)
+        address = calcval(outside, self) + calcval(inside, self)
+        self.memory[address] = self.registers[instr.operand0] & 0xFF
       elif instr.operation in ["slt", "sltu"]:
         self.registers[instr.operand0] = int(self.registers[instr.operand1] < self.registers[instr.operand2])
       elif instr.operation == "slti":
@@ -131,12 +125,9 @@ class Assembler(object):
       elif instr.operation in ["sub", "subu"]:
         self.registers[instr.operand0] = self.registers[instr.operand1] - self.registers[instr.operand2]
       elif instr.operation == "sw":
-        address, offset = parseaddress(instr.operand1)
-        if offset in self.memory.labels: address, offset = offset, address
-        if address in self.memory.labels:          address = self.memory.labels[address]
-        elif address in self.registers.conversion: address = self.registers[address]
-        else:                                      address = getval(address, False)
-        self.memory[address + getval(offset, True)] = self.registers[instr.operand0]
+        outside, inside = parseaddress(instr.operand1)
+        address = calcval(outside, self) + calcval(inside, self)
+        self.memory[address] = self.registers[instr.operand0]
       elif instr.operation == "syscall":
          retval = syscall(self.registers[2])
          if retval: break
