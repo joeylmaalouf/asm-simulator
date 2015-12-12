@@ -17,8 +17,7 @@ class Assembler(object):
     lines = clean(lines)
     instrs, data = split_sections(lines)
     self.memory = Memory()
-    for d in data:
-      self.memory.insert(d)
+    for d in data: self.memory.insert(d)
     instrs = preprocess(instrs, self.mode)
     self.labels = label_positions(instrs)
     self.instructions = [Instruction(instr) for instr in instrs]
@@ -84,10 +83,13 @@ class Assembler(object):
       elif instr.operation == "jr":
         cur_line = self.registers[instr.operand0]
       elif instr.operation == "la":
-        self.registers[instr.operand0] = instr.operand1 # since our memory is basically a dict, the labels are the addresses
+        self.registers[instr.operand0] = self.memory.labels[instr.operand1]
       elif instr.operation in ["lb", "lw"]:
-        register, offset = parseaddress(instr.operand1)
-        address = self.registers[register] if register in self.registers.conversion else getval(register, False)
+        address, offset = parseaddress(instr.operand1)
+        if offset in self.memory.labels: address, offset = offset, address
+        if address in self.memory.labels:          address = self.memory.labels[address]
+        elif address in self.registers.conversion: address = self.registers[address]
+        else:                                      address = getval(address, False)
         self.registers[instr.operand0] = self.memory[address + getval(offset, True)]
       elif instr.operation == "lui":
         self.registers[instr.operand0] = getval(instr.operand1, False) << 16
@@ -104,8 +106,11 @@ class Assembler(object):
       elif instr.operation == "ori":
         self.registers[instr.operand0] = self.registers[instr.operand1] | getval(instr.operand2, False)
       elif instr.operation == "sb":
-        register, offset = parseaddress(instr.operand1)
-        address = self.registers[register] if register in self.registers.conversion else getval(register, False)
+        address, offset = parseaddress(instr.operand1)
+        if offset in self.memory.labels: address, offset = offset, address
+        if address in self.memory.labels:          address = self.memory.labels[address]
+        elif address in self.registers.conversion: address = self.registers[address]
+        else:                                      address = getval(address, False)
         self.memory[address + getval(offset, True)] = self.registers[instr.operand0] & 0xFF
       elif instr.operation in ["slt", "sltu"]:
         self.registers[instr.operand0] = int(self.registers[instr.operand1] < self.registers[instr.operand2])
@@ -126,8 +131,11 @@ class Assembler(object):
       elif instr.operation in ["sub", "subu"]:
         self.registers[instr.operand0] = self.registers[instr.operand1] - self.registers[instr.operand2]
       elif instr.operation == "sw":
-        register, offset = parseaddress(instr.operand1)
-        address = self.registers[register] if register in self.registers.conversion else getval(register, False)
+        address, offset = parseaddress(instr.operand1)
+        if offset in self.memory.labels: address, offset = offset, address
+        if address in self.memory.labels:          address = self.memory.labels[address]
+        elif address in self.registers.conversion: address = self.registers[address]
+        else:                                      address = getval(address, False)
         self.memory[address + getval(offset, True)] = self.registers[instr.operand0]
       elif instr.operation == "syscall":
          retval = syscall(self.registers[2])
