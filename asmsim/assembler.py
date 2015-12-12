@@ -151,12 +151,6 @@ class Assembler(object):
     elif instr.operation == "adds":
       self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
       # also sets conditional flags?
-  
-  
-  def display(self):
-    """ Print the assembler mode and its register values. """
-    print("{0}\nRegister Values:\n{1}".format(self, self.registers))
-    return self
 
 
 if __name__ == "__main__":
@@ -171,4 +165,4 @@ if __name__ == "__main__":
   """
   asm = Assembler(program, "MIPS")
   asm.run()
-  asm.display()
+  print(asm.registers["$t0"], asm.registers["$t1"], asm.registers["$t2"])
