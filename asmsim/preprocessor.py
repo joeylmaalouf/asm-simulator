@@ -110,13 +110,6 @@ def label_positions(program_text):
   return labels
 
 
-def normalize(program_text, mode):
-  """ Converts instructions from a specific assembly language to our common
-  instruction set, so we don't have to process instruction logic based on mode. """
-  # TODO
-  return program_text
-
-
 if __name__ == "__main__":
   example = "text:\nli $t1, 5\nli $t2, 0x3BF20\n"
   print(example)

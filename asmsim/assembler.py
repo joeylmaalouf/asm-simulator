@@ -1,5 +1,5 @@
 from instruction import Instruction
-from preprocessor import label_positions, normalize, preprocess
+from preprocessor import label_positions, preprocess
 from registers import Registers
 from utils import getval, parseaddress, syscall
 
@@ -14,7 +14,6 @@ class Assembler(object):
     except AttributeError: program_text = program
     program_text = preprocess(program_text, self.mode)
     self.labels = label_positions(program_text)
-    program_text = normalize(program_text, self.mode)
     self.instructions = [Instruction(line) for line in program_text.split("\n") if line.strip()]
 
   def __str__(self):
