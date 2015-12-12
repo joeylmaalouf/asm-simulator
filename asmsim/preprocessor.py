@@ -6,6 +6,19 @@ def clean(program_lines):
   return [line.strip() for line in program_lines if line.strip()]
 
 
+def split_sections(program_lines):
+  text, data = [], []
+  in_text, in_data = False, False
+  for line in program_lines:
+    if line[0] == ".":
+      if   line.lower() == ".text": in_text, in_data = True, False
+      elif line.lower() == ".data": in_text, in_data = False, True
+      else: raise ValueError("Invalid section header (must be .text or .data): {0}".format(line))
+    elif in_text: text.append(line)
+    elif in_data: data.append(line)
+  return text, data
+
+
 def preprocess(program_lines, mode):
   """ Goes through our instruction list and replaces any
   pseudo-instructions with actual instructions. Differs
@@ -107,7 +120,8 @@ def label_positions(program_lines):
 
 
 if __name__ == "__main__":
-  example = ".text\n\nmain:\n  li $t1, 5\n  li $t2, 0x3BF20\n".split("\n")
+  example = ".data\nval: .byte 3\n\n.text\nmain:\n  li $t1, 5\n  li $t2, 0x3BF20\nend:\n".split("\n")
   print(example)
   print(clean(example))
+  print(split_sections(clean(example)))
   print(preprocess(clean(example), "MIPS"))

@@ -1,5 +1,5 @@
 from instruction import Instruction
-from preprocessor import clean, label_positions, preprocess
+from preprocessor import clean, label_positions, preprocess, split_sections
 from registers import Registers
 from utils import getval, parseaddress, syscall
 
@@ -8,15 +8,18 @@ class Assembler(object):
   """ The actual assembler, which takes an assembly program and simulates it. """
   def __init__(self, program, mode = "MIPS"):
     super(Assembler, self).__init__()
+    try:                   text = program.read()
+    except AttributeError: text = program
     self.mode = mode.upper()
     self.registers = Registers(self.mode)
-    try:                   program_text = program.read()
-    except AttributeError: program_text = program
-    program_lines = program_text.split("\n")
-    program_lines = clean(program_lines)
-    program_lines = preprocess(program_lines, self.mode)
-    self.labels = label_positions(program_lines)
-    self.instructions = [Instruction(line) for line in program_lines]
+    lines = text.split("\n")
+    lines = clean(lines)
+    instrs, data = split_sections(lines)
+    # TODO: put data in memory, different based on mode
+    self.memory = {}
+    instrs = preprocess(instrs, self.mode)
+    self.labels = label_positions(instrs)
+    self.instructions = [Instruction(instr) for instr in instrs]
 
   def __str__(self):
     """ String representation of the assembler. """
@@ -35,7 +38,6 @@ class Assembler(object):
     """ Execute the program using the MIPS instruction set. """
     HI, LO = 0, 0
     cur_line = 0
-    memory = {}
     while cur_line < len(self.instructions):
       instr = self.instructions[cur_line]
       if cur_line in self.labels.values(): pass
@@ -90,7 +92,7 @@ class Assembler(object):
       elif instr.operation in ["lb", "lw"]:
         register, offset = parseaddress(instr.operand1)
         address = self.registers[register] if register in self.registers else getval(register, False)
-        self.registers[instr.operand0] = memory[address + getval(offset, True)]
+        self.registers[instr.operand0] = self.memory[address + getval(offset, True)]
       elif instr.operation == "lui":
         self.registers[instr.operand0] = getval(instr.operand1, False) << 16
       elif instr.operation == "mfhi":
@@ -108,7 +110,7 @@ class Assembler(object):
       elif instr.operation == "sb":
         register, offset = parseaddress(instr.operand1)
         address = self.registers[register] if register in self.registers else getval(register, False)
-        memory[address + getval(offset, True)] = self.registers[instr.operand0] & 0xFF
+        self.memory[address + getval(offset, True)] = self.registers[instr.operand0] & 0xFF
       elif instr.operation in ["slt", "sltu"]:
         if self.registers[instr.operand1] < self.registers[instr.operand2]:
           self.registers[instr.operand0] = 1
@@ -130,7 +132,7 @@ class Assembler(object):
       elif instr.operation == "sw":
         register, offset = parseaddress(instr.operand1)
         address = self.registers[register] if register in self.registers else getval(register, False)
-        memory[address + getval(offset, True)] = self.registers[instr.operand0]
+        self.memory[address + getval(offset, True)] = self.registers[instr.operand0]
       elif instr.operation == "syscall":
          retval = syscall(self.registers[2])
          if retval: break
@@ -162,6 +164,8 @@ class Assembler(object):
 
 if __name__ == "__main__":
   program = """
+  .data
+  .text
   li $t1, 0x5
   adder:
   addi $t0, $t0, 0x1
