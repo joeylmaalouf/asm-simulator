@@ -143,14 +143,29 @@ class Assembler(object):
   
   def runARM(self):
     """ Execute the program using the ARM instruction set. """
+    #Arithmetic
     if instr.operation == "add":
       self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
-    elif instr.operation == "addeq":
-      if zero:
-        self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
-    elif instr.operation == "adds":
+    elif instr.operation == "adc":
+      self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2] + carry #look into what carry actually is
+    elif instr.operation == "sub":
+      self.registers[instr.operand0] = self.registers[instr.operand1] - self.registers[instr.operand2]
+    elif instr.operation == "sbc":
+      self.registers[instr.operand0] = self.registers[instr.operand1] - self.registers[instr.operand2] + (carry-1)
+    elif instr.operation == "rsb":
+      self.registers[instr.operand0] = self.registers[instr.operand2] - self.registers[instr.operand1]
+    elif instr.operation == "rsc":
+      self.registers[instr.operand0] = self.registers[instr.operand2] - self.registers[instr.operand1] + (carry-1)
+    #Branch
+    elif instr.operation == "b":
       self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
-      # also sets conditional flags?
+    elif instr.operation == "bl":
+      self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
+    
+    #Comparisons
+    #Logical Operations
+    #Data Movement
+
 
 
 if __name__ == "__main__":

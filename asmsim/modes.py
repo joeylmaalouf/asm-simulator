@@ -70,8 +70,8 @@ ARM_registers = {
   "r11": 11, "r11_fiq": 11,
   "r12": 12, "r12_fiq": 12,
   "r13": 13, "r13_fiq": 13, "r13_svc": 13, "r13_abt": 13, "r13_irq": 13, "r13_undef": 13,
-  "r14": 14, "r14_fiq": 14, "r14_svc": 13, "r13_abt": 13, "r13_irq": 13, "r13_undef": 13,
-  "r15": 15,
+  "r14": 14, "r14_fiq": 14, "r14_svc": 14, "r14_abt": 14, "r14_irq": 14, "r14_undef": 14, "lr":14,
+  "r15": 15, "pc": 15
   "cpsr": 16,
              "spsr_fiq":17, "spsr_svc": 17, "spsr_abt": 17, "spsr_irq": 17, "spsr_undef": 17,
 }
