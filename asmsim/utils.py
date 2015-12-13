@@ -1,5 +1,9 @@
 import time
 
+def ARM_add(o1, o2):
+  """Using two 32-bit operands, add them"""
+  return o1+o2
+
 
 def num_upper(val):
   """ Get a hex string of the upper 16 bits in a 32 bit number. """

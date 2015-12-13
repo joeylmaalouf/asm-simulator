@@ -144,8 +144,14 @@ class Assembler(object):
   def runARM(self):
     """ Execute the program using the ARM instruction set. """
     #Arithmetic
-    if instr.operation == "add":
-      self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
+    if "eq" in instr.operation: #execute only if zero flag is set
+      if "add" in instr.operation:
+        self.registers[instr.operand0] = ARM_add(self.registers[instr.operand1], self.registers[instr.operand2])
+      pass
+    elif "s" in instr.operation:
+      pass
+      
+      #self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
     elif instr.operation == "adc":
       self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2] + carry #look into what carry actually is
     elif instr.operation == "sub":
@@ -158,10 +164,9 @@ class Assembler(object):
       self.registers[instr.operand0] = self.registers[instr.operand2] - self.registers[instr.operand1] + (carry-1)
     #Branch
     elif instr.operation == "b":
-      self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
+      cur_line = self.labels[instr.operand0]
     elif instr.operation == "bl":
-      self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
-    
+      self.registers[15] = cur_line + 1    
     #Comparisons
     #Logical Operations
     #Data Movement
