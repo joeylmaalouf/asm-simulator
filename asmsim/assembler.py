@@ -143,13 +143,13 @@ class Assembler(object):
   
   def runARM(self):
     """ Execute the program using the ARM instruction set. """
-    #Arithmetic
-    if "eq" in instr.operation: #execute only if zero flag is set
+    # Arithmetic
+    if "eq" in instr.operation: # execute only if zero flag is set
       if "add" in instr.operation:
         self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
       pass
-    #elif "s" in instr.operation:
-      pass
+    # elif "s" in instr.operation:
+      # pass
     elif "ne" in instr.operation:
       pass
     elif "cs" in instr.operation or "hs" in instr.operation:
