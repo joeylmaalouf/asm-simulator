@@ -146,11 +146,36 @@ class Assembler(object):
     #Arithmetic
     if "eq" in instr.operation: #execute only if zero flag is set
       if "add" in instr.operation:
-        self.registers[instr.operand0] = ARM_add(self.registers[instr.operand1], self.registers[instr.operand2])
+        self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
       pass
-    elif "s" in instr.operation:
+    #elif "s" in instr.operation:
       pass
-      
+    elif "ne" in instr.operation:
+      pass
+    elif "cs" in instr.operation or "hs" in instr.operation:
+      pass 
+    elif "cc" in instr.operation or "lo" in instr.operation:
+      pass
+    elif "mi" in instr.operation:
+      pass
+    elif "pl" in instr.operation:
+      pass
+    elif "vs" in instr.operation:
+      pass
+    elif "vc" in instr.operation:
+      pass
+    elif "hi" in instr.operation:
+      pass
+    elif "ls" in instr.operation:
+      pass
+    elif "ge" in instr.operation:
+      pass
+    elif "lt" in instr.operation:
+      pass
+    elif "gt" in instr.operation:
+      pass
+    elif "le" in instr.operation:
+      pass
       #self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
     elif instr.operation == "adc":
       self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2] + carry #look into what carry actually is
