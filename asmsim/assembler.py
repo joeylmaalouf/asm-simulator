@@ -3,7 +3,7 @@ from instruction import Instruction
 from memory import Memory
 from preprocessor import clean, label_positions, preprocess, split_sections
 from registers import Registers
-from utils import calcval, getval, mips_syscall, parse_address, parse_arm_instr
+from utils import calcval, getimm, getval, mips_syscall, parse_address, parse_arm_instr
 
 
 class Assembler(object):
@@ -15,7 +15,7 @@ class Assembler(object):
     self.mode = mode.upper()
     self.registers = Registers(self.mode)
     lines = text.split("\n")
-    lines = clean(lines)
+    lines = clean(lines, self.mode)
     instrs, data = split_sections(lines)
     self.memory = Memory()
     for d in data: self.memory.insert(d)
@@ -46,13 +46,13 @@ class Assembler(object):
       elif instr.operation in ["add", "addu"]:
         self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
       elif instr.operation == "addi":
-        self.registers[instr.operand0] = self.registers[instr.operand1] + getval(instr.operand2, True)
+        self.registers[instr.operand0] = self.registers[instr.operand1] + getimm(instr.operand2, True)
       elif instr.operation == "addiu":
-        self.registers[instr.operand0] = self.registers[instr.operand1] + getval(instr.operand2, False)
+        self.registers[instr.operand0] = self.registers[instr.operand1] + getimm(instr.operand2, False)
       elif instr.operation == "and":
         self.registers[instr.operand0] = self.registers[instr.operand1] & self.registers[instr.operand2]
       elif instr.operation == "andi":
-        self.registers[instr.operand0] = self.registers[instr.operand1] & getval(instr.operand2, False)
+        self.registers[instr.operand0] = self.registers[instr.operand1] & getimm(instr.operand2, False)
       elif instr.operation == "beq":
         if self.registers[instr.operand0] == self.registers[instr.operand1]:
           cur_line = self.labels[instr.operand2] # jump straight to the label rather than the following instruction because we increment the line counter at the end anyway
@@ -90,7 +90,7 @@ class Assembler(object):
         address = calcval(outside, self) + calcval(inside, self)
         self.registers[instr.operand0] = self.memory[address]
       elif instr.operation == "lui":
-        self.registers[instr.operand0] = getval(instr.operand1, False) << 16
+        self.registers[instr.operand0] = getimm(instr.operand1, False) << 16
       elif instr.operation == "mfhi":
         self.registers[instr.operand0] = HI
       elif instr.operation == "mflo":
@@ -102,7 +102,7 @@ class Assembler(object):
       elif instr.operation == "or":
         self.registers[instr.operand0] = self.registers[instr.operand1] | self.registers[instr.operand2]
       elif instr.operation == "ori":
-        self.registers[instr.operand0] = self.registers[instr.operand1] | getval(instr.operand2, False)
+        self.registers[instr.operand0] = self.registers[instr.operand1] | getimm(instr.operand2, False)
       elif instr.operation == "sb":
         outside, inside = parse_address(instr.operand1)
         address = calcval(outside, self) + calcval(inside, self)
@@ -110,17 +110,17 @@ class Assembler(object):
       elif instr.operation in ["slt", "sltu"]:
         self.registers[instr.operand0] = int(self.registers[instr.operand1] < self.registers[instr.operand2])
       elif instr.operation == "slti":
-        self.registers[instr.operand0] = int(self.registers[instr.operand1] < getval(instr.operand2, True))
+        self.registers[instr.operand0] = int(self.registers[instr.operand1] < getimm(instr.operand2, True))
       elif instr.operation == "sltiu":
-        self.registers[instr.operand0] = int(self.registers[instr.operand1] < getval(instr.operand2, False))
+        self.registers[instr.operand0] = int(self.registers[instr.operand1] < getimm(instr.operand2, False))
       elif instr.operation == "sll":
-        self.registers[instr.operand0] = self.registers[instr.operand1] << getval(instr.operand2, False)
+        self.registers[instr.operand0] = self.registers[instr.operand1] << getimm(instr.operand2, False)
       elif instr.operation == "sllv":
         self.registers[instr.operand0] = self.registers[instr.operand1] << self.registers[instr.operand2]
       elif instr.operation == "sra":
-        self.registers[instr.operand0] = self.registers[instr.operand1] >> getval(instr.operand2, True)
+        self.registers[instr.operand0] = self.registers[instr.operand1] >> getimm(instr.operand2, True)
       elif instr.operation == "srl":
-        self.registers[instr.operand0] = self.registers[instr.operand1] >> getval(instr.operand2, False)
+        self.registers[instr.operand0] = self.registers[instr.operand1] >> getimm(instr.operand2, False)
       elif instr.operation == "srlv":
         self.registers[instr.operand0] = self.registers[instr.operand1] >> self.registers[instr.operand2]
       elif instr.operation in ["sub", "subu"]:
@@ -135,10 +135,11 @@ class Assembler(object):
       elif instr.operation == "xor":
         self.registers[instr.operand0] = self.registers[instr.operand1] ^ self.registers[instr.operand2]
       elif instr.operation == "xori":
-        self.registers[instr.operand0] = self.registers[instr.operand1] ^ getval(instr.operand2, False)
+        self.registers[instr.operand0] = self.registers[instr.operand1] ^ getimm(instr.operand2, False)
       elif instr.operation == "break":
         break
-      else: raise ValueError("Unrecognized instruction: {0}".format(instr.operation))
+      else:
+        raise ValueError("Unrecognized operation: {0}".format(instr.operation))
       cur_line += 1
     return self
   
@@ -168,53 +169,57 @@ class Assembler(object):
         cur_line += 1
         continue
       else: # we checked for all of our conditions and either there was none specified or there was one and we met its requirements
-        # DO THINGS ACCORDING TO OPERATION THEN POTENTIALLY SET FLAGS
-        pass
-        """
-        if "add" in instr.operation:
-          self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
-        pass
-
-        elif instr.operation == "adc":
-          self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2] + self.flags.C
-        elif instr.operation == "sub":
-          self.registers[instr.operand0] = self.registers[instr.operand1] - self.registers[instr.operand2]
-        elif instr.operation == "sbc":
-          self.registers[instr.operand0] = self.registers[instr.operand1] - self.registers[instr.operand2] + (self.flags.C - 1)
-        elif instr.operation == "rsb":
-          self.registers[instr.operand0] = self.registers[instr.operand2] - self.registers[instr.operand1]
-        elif instr.operation == "rsc":
-          self.registers[instr.operand0] = self.registers[instr.operand2] - self.registers[instr.operand1] + (self.flags.C - 1)
+        if operation == "add":
+          self.registers[instr.operand0] = self.registers[instr.operand1] + getval(self.registers, instr.operand2)
+        elif operation == "adc":
+          self.registers[instr.operand0] = self.registers[instr.operand1] + getval(self.registers, instr.operand2) + self.flags.C
+        elif operation == "sub":
+          self.registers[instr.operand0] = self.registers[instr.operand1] - getval(self.registers, instr.operand2)
+        elif operation == "sbc":
+          self.registers[instr.operand0] = self.registers[instr.operand1] - getval(self.registers, instr.operand2) + (self.flags.C - 1)
+        elif operation == "rsb":
+          self.registers[instr.operand0] = getval(self.registers, instr.operand2) - self.registers[instr.operand1]
+        elif operation == "rsc":
+          self.registers[instr.operand0] = getval(self.registers, instr.operand2) - self.registers[instr.operand1] + (self.flags.C - 1)
+        elif operation == "mul":
+          self.registers[instr.operand0] = self.registers[instr.operand1] * getval(self.registers, instr.operand2)
+        elif operation == "div":
+          self.registers[instr.operand0] = self.registers[instr.operand1] // getval(self.registers, instr.operand2)
         # branching
-        elif instr.operation == "b":
+        elif operation == "b":
           cur_line = self.labels[instr.operand0]
-        elif instr.operation == "bl":
+        elif operation == "bl":
           self.registers[15] = cur_line + 1
+          cur_line = self.labels[instr.operand0]
         # comparisons for setting flags    
-        elif instr.operation == "cmp":
+        elif operation == "cmp":
           res = self.registers[instr.operand0] - self.registers[instr.operand1]
           self.flags.update(N = int(res < 0), Z = int(res == 0))
-        elif instr.operation == "cmn":
+        elif operation == "cmn":
           res = self.registers[instr.operand0] + self.registers[instr.operand1]
           self.flags.update(N = int(res < 0), Z = int(res == 0), C = int(4294967295 > res > 2147483647), V = int(res > 4294967295))
-        elif instr.operation == "tst":
+        elif operation == "tst":
           res = self.registers[instr.operand0] & self.registers[instr.operand1]
           self.flags.update(Z = int(res == 0))
-        elif instr.operation == "teq":
+        elif operation == "teq":
           res = self.registers[instr.operand0] ^ self.registers[instr.operand1]
           self.flags.update(Z = int(res == 0))
         # logical operations
-        elif instr.operation == "and":
+        elif operation == "and":
           self.registers[instr.operand0] = self.registers[instr.operand1] & self.registers[instr.operand2]
-        elif instr.operation == "eor":
+        elif operation == "eor":
           self.registers[instr.operand0] = self.registers[instr.operand1] ^ self.registers[instr.operand2]
-        elif instr.operation == "orr":
+        elif operation == "orr":
           self.registers[instr.operand0] = self.registers[instr.operand1] | self.registers[instr.operand2]
-        elif instr.operation == "bic":
-          self.registers[instr.operand0] = self.registers[instr.operand1] & ~self.registers[instr.operand2]
+        elif operation == "bic":
+          self.registers[instr.operand0] = self.registers[instr.operand1] & (~self.registers[instr.operand2] & 0xFFFFFFFF)
         # data movement
-        # ...
-        """
+        elif operation == "mov":
+          self.registers[instr.operand0] = self.registers[instr.operand1]
+        elif operation == "mvn":
+          self.registers[instr.operand0] = (~self.registers[instr.operand1] & 0xFFFFFFFF)
+        else:
+          raise ValueError("Unrecognized operation: {0}".format(instr.operation))
       cur_line += 1
     return self
 

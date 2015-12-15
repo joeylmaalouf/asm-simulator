@@ -11,7 +11,7 @@ def num_lower(val):
   return hex(int(bin(val)[-16:], 2))
 
 
-def getval(hexstring, signed = True):
+def getimm(hexstring, signed = True):
   """ Get the value of the inputted hex string based on whether or not the input is signed. """
   if signed: return twoscomp(hexstring)
   else:      return int(hexstring, 16)
@@ -24,6 +24,11 @@ def twoscomp(hexstring):
   if binstring[0] == "1":
     val -= (1 << 32)
   return val
+
+
+def getval(registers, operand):
+  if operand[0] == "#": return getimm(operand[1:], False)
+  else:                 return registers[operand]
 
 
 def parse_address(hexstring):
@@ -47,7 +52,7 @@ def calcval(value, assembler):
   or number address, and return the corresponding value. """
   if value in assembler.memory.labels:          return assembler.memory.labels[value]
   elif value in assembler.registers.conversion: return assembler.registers[value]
-  else:                                         return getval(value, True)
+  else:                                         return getimm(value, True)
 
 
 def parse_arm_instr(instr):
@@ -157,15 +162,15 @@ def mips_syscall(v0):
 
 
 if __name__ == "__main__":
-  print(getval("00000000", True))
-  print(getval("7FFFFFFF", True))
-  print(getval("80000000", True))
-  print(getval("FFFFFFFF", True))
+  print(getimm("00000000", True))
+  print(getimm("7FFFFFFF", True))
+  print(getimm("80000000", True))
+  print(getimm("FFFFFFFF", True))
   print("")
-  print(getval("00000000", False))
-  print(getval("7FFFFFFF", False))
-  print(getval("80000000", False))
-  print(getval("FFFFFFFF", False))
+  print(getimm("00000000", False))
+  print(getimm("7FFFFFFF", False))
+  print(getimm("80000000", False))
+  print(getimm("FFFFFFFF", False))
   print("")
   print(parse_address("A($t0)"))
   print(parse_address("$t0(A)"))

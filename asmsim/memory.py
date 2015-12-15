@@ -1,4 +1,4 @@
-from utils import getval
+from utils import getimm
 
 
 class Memory(object):
@@ -31,10 +31,10 @@ class Memory(object):
       raise ValueError("Invalid data type: {0}".format(dtype))
     self.labels[name] = self.offset
     if dtype == "space":
-      self.offset += getval(values[0], True)
+      self.offset += getimm(values[0], True)
     else:
       for value in values:
-        self[self.offset] = value if "ascii" in dtype else getval(value, True)
+        self[self.offset] = value if "ascii" in dtype else getimm(value, True)
         self.offset += 1
 
 

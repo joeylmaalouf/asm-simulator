@@ -2,11 +2,12 @@ from instruction import Instruction
 from utils import num_lower, num_upper
 
 
-def clean(lines):
+def clean(lines, mode):
   """ Strips extra whitespace and remove comments. """
+  comment_char = {"MIPS": "#", "ARM": "@"}[mode]
   cleaned = []
   for line in lines:
-    l = line.strip().split("#")[0].strip()
+    l = line.strip().split(comment_char)[0].strip()
     if l: cleaned.append(l)
   return cleaned
 
@@ -110,7 +111,7 @@ def preprocess(lines, mode):
 
     elif mode == "ARM":
       # TODO
-      pass
+      processed.append(str(instr))
 
   return processed
 
