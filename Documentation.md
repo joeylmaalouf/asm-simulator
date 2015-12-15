@@ -1,20 +1,13 @@
 # Python Assembly Simulator
 
 ### What did we do?
-
-We created a python program to run assembly instructions in ARM or MIPS architecture, simulating a system with either architectures. It can be given inputs of an iterable object, and will turn text into instructions to run. It also has a functioning data memory, which we have demonstrated with a program that can repeatedly double an array in data memory.
+We created a Python assembly simulator which can take in either MIPS or ARM instructions and return an output consistent with what would be expected from a standard assembler. We try to mimic the behavior of a standard assembler as closely to the actual encoded actions as possible. The MIPS assembler includes parsing for pseudoinstructions, usable data memory, and all other operations with the expected registers. The ARM assembler contains parsing for the no operation pseudoinstruction only as well as all expected operations compatible with the appropriate registers. 
 
 ### Why did we do it?
-
-We wanted to learn more about assembly, especially how different asm languages/architectures parse and execute instructions.
+We wanted to learn more about assembly, especially how different asm languages/architectures parse and execute instructions. We discovered a huge number of similarities, with some things being exactly the same. That being said, there were quite a few discrepancies as well. The modular and expandable nature of our code allowed us to reuse some parsing and register implementations across languages, and paves the way for future additions if desired. Becuase Computer Architecture only has time to cover the MIPS implementation of assembly, this experience helped to highlight advantages and disadvantages that would have been missed had we assumed MIPS was all that was out there.
 
 ### How did we do it?
-
-1. We started by creating a Register class, to simulate the registers that would hold values in a physical system. The Register class also allows us to easily specify which register we want to access in our program, either by name or number
-2. Once we had registers, we also created an Instruction object, designed to parse each line of assembly code, and break it down into operands and operators, which refer to register locations and things to do to them.
-3. Finally, we started inplimenting the assembler. The MIPS one was first, and simpler - it takes in the instruction, and has an operation ready for each different instruction, and common pseudo-instructions.
-4. ARM was a bigger challenge, because each instruction has multiple versions based on conditional execution. We first analyze the instruction for all of the possible conditions, and evaluate those conditions. If the condition fails, we simply don't execute the instruction. If we do meet the conditional, the execution goes through. That allowes us to only wory about one implimentation of the execution of the instructions, instead of having to inpliment execution for every possible version of a more basic command.
+Using no external libraries, we created our own Assembler module, internally composed of Memory, Registers, Instructions, Flags, and utility functions. When instantiated, it parses the given file or text as assembly code in the language specified in the Assembler mode, and replaces all pseudo-instructions with their actual counterparts in preprocessing. Anything in the data section is inserted into the Memory, while the contents of the text section becomes Instructions. Upon running the Assembler, each of the Instructions' behavior is executed on the given Registers and Memory addresses.
 
 ### How can someone else build on it?
-
-
+The inspiration for our implementation came from studying the documentation of both MIPS and ARM, so another group could follow in our steps by studying the same references we used, which are listed in our README. Because we used a high-level language to simulate the running of assembly code, how closely a team follows the actual letter of the execution is open to individual decision. As such, a team could easily choose to undertake a project that is more or less realistic than this one. The only tools required are the internet (to learn) and the default Python libraries (to run the code), so this project is highly accessible. The modular nature of our code lends itself to being expanded and improved with relative ease.
