@@ -27,6 +27,8 @@ if __name__ == "__main__":
   print(a.registers["$t2"])
 ```
 
+See `example.py` for more examples of Assembler usage.
+
 
 ### References:
 * http://www.mrc.uidaho.edu/mrc/people/jff/digital/MIPSir.html

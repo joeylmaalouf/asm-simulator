@@ -2,11 +2,12 @@ from instruction import Instruction
 from utils import num_lower, num_upper
 
 
-def clean(lines):
+def clean(lines, mode):
   """ Strips extra whitespace and remove comments. """
+  comment_char = {"MIPS": "#", "ARM": "@"}[mode]
   cleaned = []
   for line in lines:
-    l = line.strip().split("#")[0].strip()
+    l = line.strip().split(comment_char)[0].strip()
     if l: cleaned.append(l)
   return cleaned
 
@@ -109,8 +110,9 @@ def preprocess(lines, mode):
       processed.append(str(instr))
 
     elif mode == "ARM":
-      # TODO
-      pass
+      if instr.operation == "nop":
+        instr.update("mov", "r0", "r0", None)
+      processed.append(str(instr))
 
   return processed
 
@@ -130,6 +132,10 @@ def label_positions(lines):
 if __name__ == "__main__":
   example = ".data\nval: .byte 3\n\n.text\nmain:\n  li $t1, 5\n  li $t2, 0x3BF20\nend:\n".split("\n")
   print(example)
-  print(clean(example))
-  print(split_sections(clean(example)))
-  print(preprocess(clean(example), "MIPS"))
+  print(clean(example, "MIPS"))
+  print(split_sections(clean(example, "MIPS")))
+  print(preprocess(clean(example, "MIPS"), "MIPS"))
+
+  example = "nop\nadd r0, r1, #5".split("\n")
+  print(example)
+  print(preprocess(clean(example, "ARM"), "ARM"))
