@@ -110,7 +110,6 @@ def preprocess(lines, mode):
       processed.append(str(instr))
 
     elif mode == "ARM":
-      # TODO
       if instr.operation == "nop":
         instr.update("mov", "r0", "r0", None)
       processed.append(str(instr))
