@@ -34,3 +34,5 @@ See `example.py` for more examples of Assembler usage.
 * http://www.mrc.uidaho.edu/mrc/people/jff/digital/MIPSir.html
 * https://en.wikipedia.org/wiki/MIPS_instruction_set#Pseudo_instructions
 * http://www.cs.umd.edu/class/sum2003/cmsc311/Notes/Mips/dataseg.html
+* https://community.arm.com/groups/processors/blog/2010/07/16/condition-codes-1-condition-flags-and-codes
+* http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0068b/Chdehgih.html
