@@ -197,7 +197,7 @@ class Assembler(object):
           self.flags.update(N = int(res < 0), Z = int(res == 0))
         elif operation == "cmn":
           res = self.registers[instr.operand0] + self.registers[instr.operand1]
-          self.flags.update(N = int(res < 0), Z = int(res == 0), C = int(4294967295 > res > 2147483647), V = int(res > 4294967295))
+          self.flags.update(N = int(res < 0), Z = int(res == 0), C = int(2**32-1 < res), V = int(2**31-1 < res < 2**32-1))
         elif operation == "tst":
           res = self.registers[instr.operand0] & self.registers[instr.operand1]
           self.flags.update(Z = int(res == 0))
@@ -220,6 +220,12 @@ class Assembler(object):
           self.registers[instr.operand0] = (~self.registers[instr.operand1] & 0xFFFFFFFF)
         else:
           raise ValueError("Unrecognized operation: {0}".format(instr.operation))
+      if sets_flags:
+        N = int(self.registers[instr.operand0] < 0)
+        Z = int(self.registers[instr.operand0] == 0)
+        C = int(2**32-1 < self.registers[instr.operand0])
+        V = int(2**31-1 < self.registers[instr.operand0] < 2**32-1)
+        self.flags.update(N, Z, C, V)
       cur_line += 1
     return self
 

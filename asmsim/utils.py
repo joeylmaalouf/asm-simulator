@@ -3,12 +3,12 @@ import time
 
 def num_upper(val):
   """ Get a hex string of the upper 16 bits in a 32 bit number. """
-  return hex(int(bin(val)[:-16], 2))
+  return hex(int("{:032b}".format(val)[:-16], 2))
 
 
 def num_lower(val):
   """ Get a hex string of the lower 16 bits in a 32 bit number. """
-  return hex(int(bin(val)[-16:], 2))
+  return hex(int("{:032b}".format(val)[-16:], 2))
 
 
 def getimm(hexstring, signed = True):
@@ -162,6 +162,9 @@ def mips_syscall(v0):
 
 
 if __name__ == "__main__":
+  print(num_upper(int("0x123456", 16)))
+  print(num_lower(int("0x123456", 16)))
+  print("")
   print(getimm("00000000", True))
   print(getimm("7FFFFFFF", True))
   print(getimm("80000000", True))
