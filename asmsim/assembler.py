@@ -149,10 +149,10 @@ class Assembler(object):
     cur_line = 0
     while cur_line < len(self.instructions):
       instr = self.instructions[cur_line]
-      if cur_line in self.labels.values(): pass
       operation, condition, sets_flags = parse_arm_instr(instr.operation)
       # check for presence of condition and that we DO NOT meet it, in which case we skip to the next instruction
-      if (condition == "eq" and (not self.flags.Z)) or \
+      if (cur_line in self.labels.values()) or \
+         (condition == "eq" and (not self.flags.Z)) or \
          (condition == "ne" and      self.flags.Z ) or \
          (condition in ["cs", "hs"] and (not self.flags.C)) or \
          (condition in ["cc", "lo"] and      self.flags.C ) or \

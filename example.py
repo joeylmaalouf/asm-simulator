@@ -8,6 +8,6 @@ if __name__ == "__main__":
   print(a.memory[offset], a.memory[offset+1], a.memory[offset+2], a.memory[offset+3])
 
   a = Assembler(open("example_arm.asm", "r"), "ARM")
-  print(a.registers["r0"])
+  print(a.registers["r2"])
   a.run()
-  print(a.registers["r0"])
+  print(a.registers["r2"])

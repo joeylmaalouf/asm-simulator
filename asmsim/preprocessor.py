@@ -111,6 +111,8 @@ def preprocess(lines, mode):
 
     elif mode == "ARM":
       # TODO
+      if instr.operation == "nop":
+        instr.update("mov", "r0", "r0", None)
       processed.append(str(instr))
 
   return processed
@@ -131,6 +133,10 @@ def label_positions(lines):
 if __name__ == "__main__":
   example = ".data\nval: .byte 3\n\n.text\nmain:\n  li $t1, 5\n  li $t2, 0x3BF20\nend:\n".split("\n")
   print(example)
-  print(clean(example))
-  print(split_sections(clean(example)))
-  print(preprocess(clean(example), "MIPS"))
+  print(clean(example, "MIPS"))
+  print(split_sections(clean(example, "MIPS")))
+  print(preprocess(clean(example, "MIPS"), "MIPS"))
+
+  example = "nop\nadd r0, r1, #5".split("\n")
+  print(example)
+  print(preprocess(clean(example, "ARM"), "ARM"))
