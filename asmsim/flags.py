@@ -19,10 +19,10 @@ class Flags(object):
   
   def update(self,*flag):
     """ Update the flags attributes all at once. """
-    self.Nflag = flag[0]
-    if len(flag) > 1: self.Zflag = flag[1] 
-    if len(flag) > 2: self.Cflag = flag[2] 
-    if len(flag) > 3: self.Vflag = flag[3] 
+    if flag[0] != None: self.Nflag = flag[0]
+    if len(flag) > 1 and flag[1] != None: self.Zflag = flag[1] 
+    if len(flag) > 2 and flag[2] != None: self.Cflag = flag[2] 
+    if len(flag) > 3 and flag[3] != None: self.Vflag = flag[3] 
 
 
   def updateN(self, Nflag):
@@ -36,11 +36,11 @@ class Flags(object):
 
   def updateV(self, Vflag):
   	if Vflag != None: self.Vflag = Vflag
-
+  
 
 if __name__ == "__main__":
   flags = Flags("0, 0, 0, 0")
   print(flags.raw)
   print(flags.Nflag, flags.Zflag, flags.Cflag, flags.Vflag)
-  flags.update(1,None, 1)
+  flags.update(1, , 1, None)
   print(flags.Nflag, flags.Zflag, flags.Cflag, flags.Vflag)
