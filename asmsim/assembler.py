@@ -3,7 +3,7 @@ from instruction import Instruction
 from memory import Memory
 from preprocessor import clean, label_positions, preprocess, split_sections
 from registers import Registers
-from utils import calcval, getval, parseaddress, syscall
+from utils import calcval, getval, mips_syscall, parse_address, parse_arm_instr
 
 
 class Assembler(object):
@@ -86,7 +86,7 @@ class Assembler(object):
       elif instr.operation == "la":
         self.registers[instr.operand0] = self.memory.labels[instr.operand1]
       elif instr.operation in ["lb", "lw"]:
-        outside, inside = parseaddress(instr.operand1)
+        outside, inside = parse_address(instr.operand1)
         address = calcval(outside, self) + calcval(inside, self)
         self.registers[instr.operand0] = self.memory[address]
       elif instr.operation == "lui":
@@ -104,7 +104,7 @@ class Assembler(object):
       elif instr.operation == "ori":
         self.registers[instr.operand0] = self.registers[instr.operand1] | getval(instr.operand2, False)
       elif instr.operation == "sb":
-        outside, inside = parseaddress(instr.operand1)
+        outside, inside = parse_address(instr.operand1)
         address = calcval(outside, self) + calcval(inside, self)
         self.memory[address] = self.registers[instr.operand0] & 0xFF
       elif instr.operation in ["slt", "sltu"]:
@@ -126,11 +126,11 @@ class Assembler(object):
       elif instr.operation in ["sub", "subu"]:
         self.registers[instr.operand0] = self.registers[instr.operand1] - self.registers[instr.operand2]
       elif instr.operation == "sw":
-        outside, inside = parseaddress(instr.operand1)
+        outside, inside = parse_address(instr.operand1)
         address = calcval(outside, self) + calcval(inside, self)
         self.memory[address] = self.registers[instr.operand0]
       elif instr.operation == "syscall":
-         retval = syscall(self.registers[2])
+         retval = mips_syscall(self.registers[2])
          if retval: break
       elif instr.operation == "xor":
         self.registers[instr.operand0] = self.registers[instr.operand1] ^ self.registers[instr.operand2]
@@ -149,80 +149,74 @@ class Assembler(object):
     while cur_line < len(self.instructions):
       instr = self.instructions[cur_line]
       if cur_line in self.labels.values(): pass
-      elif "eq" in instr.operation:
+      operation, condition, sets_flags = parse_arm_instr(instr.operation)
+      # check for presence of condition and that we DO NOT meet it, in which case we skip to the next instruction
+      if (condition == "eq" and (not self.flags.Z)) or \
+         (condition == "ne" and      self.flags.Z ) or \
+         (condition in ["cs", "hs"] and (not self.flags.C)) or \
+         (condition in ["cc", "lo"] and      self.flags.C ) or \
+         (condition == "mi" and (not self.flags.N)) or \
+         (condition == "pl" and      self.flags.N ) or \
+         (condition == "vs" and (not self.flags.V)) or \
+         (condition == "vc" and      self.flags.V ) or \
+         (condition == "hi" and ((not self.flags.C) or       self.flags.Z) ) or \
+         (condition == "ls" and (     self.flags.C  and (not self.flags.Z))) or \
+         (condition == "ge" and (self.flags.N != self.flags.V)) or \
+         (condition == "lt" and (self.flags.N == self.flags.V)) or \
+         (condition == "gt" and (    self.flags.Z or  (self.flags.N != self.flags.V))) or \
+         (condition == "le" and (not self.flags.Z and (self.flags.N == self.flags.V))):
+        cur_line += 1
+        continue
+      else: # we checked for all of our conditions and either there was none specified or there was one and we met its requirements
+        # DO THINGS ACCORDING TO OPERATION THEN POTENTIALLY SET FLAGS
+        pass
+        """
         if "add" in instr.operation:
           self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
         pass
-      # elif "s" in instr.operation:
-        # pass
-      elif "ne" in instr.operation:
-        pass
-      elif "cs" in instr.operation or "hs" in instr.operation:
-        pass 
-      elif "cc" in instr.operation or "lo" in instr.operation:
-        pass
-      elif "mi" in instr.operation:
-        pass
-      elif "pl" in instr.operation:
-        pass
-      elif "vs" in instr.operation:
-        pass
-      elif "vc" in instr.operation:
-        pass
-      elif "hi" in instr.operation:
-        pass
-      elif "ls" in instr.operation:
-        pass
-      elif "ge" in instr.operation:
-        pass
-      elif "lt" in instr.operation:
-        pass
-      elif "gt" in instr.operation:
-        pass
-      elif "le" in instr.operation:
-        pass
-      elif instr.operation == "adc":
-        self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2] + carry # look into what carry actually is
-      elif instr.operation == "sub":
-        self.registers[instr.operand0] = self.registers[instr.operand1] - self.registers[instr.operand2]
-      elif instr.operation == "sbc":
-        self.registers[instr.operand0] = self.registers[instr.operand1] - self.registers[instr.operand2] + (carry - 1)
-      elif instr.operation == "rsb":
-        self.registers[instr.operand0] = self.registers[instr.operand2] - self.registers[instr.operand1]
-      elif instr.operation == "rsc":
-        self.registers[instr.operand0] = self.registers[instr.operand2] - self.registers[instr.operand1] + (carry - 1)
-      # branching
-      elif instr.operation == "b":
-        cur_line = self.labels[instr.operand0]
-      elif instr.operation == "bl":
-        self.registers[15] = cur_line + 1
-      # comparisons for setting flags    
-      elif instr.operation == "cmp":
-        res = self.registers[instr.operand0] - self.registers[instr.operand1]
-        self.flags.update(N = int(res < 0), Z = int(res == 0))
-      elif instr.operation == "cmn":
-        res = self.registers[instr.operand0] + self.registers[instr.operand1]
-        self.flags.update(N = int(res < 0), Z = int(res == 0), C = int(4294967295 > res > 2147483647), V = int(res > 4294967295))
-      elif instr.operation == "tst":
-        res = self.registers[instr.operand0] & self.registers[instr.operand1]
-        self.flags.update(Z = int(res == 0))
-      elif instr.operation == "teq":
-        res = self.registers[instr.operand0] ^ self.registers[instr.operand1]
-        self.flags.update(Z = int(res == 0))
-      # logical operations
-      elif instr.operation == "and":
-        self.registers[instr.operand0] = self.registers[instr.operand1] & self.registers[instr.operand2]
-      elif instr.operation == "eor":
-        self.registers[instr.operand0] = self.registers[instr.operand1] ^ self.registers[instr.operand2]
-      elif instr.operation == "orr":
-        self.registers[instr.operand0] = self.registers[instr.operand1] | self.registers[instr.operand2]
-      elif instr.operation == "bic":
-        self.registers[instr.operand0] = self.registers[instr.operand1] & ~self.registers[instr.operand2]
-      # data movement
-      # ...
-      else: raise ValueError("Unrecognized instruction: {0}".format(instr.operation))
+
+        elif instr.operation == "adc":
+          self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2] + self.flags.C
+        elif instr.operation == "sub":
+          self.registers[instr.operand0] = self.registers[instr.operand1] - self.registers[instr.operand2]
+        elif instr.operation == "sbc":
+          self.registers[instr.operand0] = self.registers[instr.operand1] - self.registers[instr.operand2] + (self.flags.C - 1)
+        elif instr.operation == "rsb":
+          self.registers[instr.operand0] = self.registers[instr.operand2] - self.registers[instr.operand1]
+        elif instr.operation == "rsc":
+          self.registers[instr.operand0] = self.registers[instr.operand2] - self.registers[instr.operand1] + (self.flags.C - 1)
+        # branching
+        elif instr.operation == "b":
+          cur_line = self.labels[instr.operand0]
+        elif instr.operation == "bl":
+          self.registers[15] = cur_line + 1
+        # comparisons for setting flags    
+        elif instr.operation == "cmp":
+          res = self.registers[instr.operand0] - self.registers[instr.operand1]
+          self.flags.update(N = int(res < 0), Z = int(res == 0))
+        elif instr.operation == "cmn":
+          res = self.registers[instr.operand0] + self.registers[instr.operand1]
+          self.flags.update(N = int(res < 0), Z = int(res == 0), C = int(4294967295 > res > 2147483647), V = int(res > 4294967295))
+        elif instr.operation == "tst":
+          res = self.registers[instr.operand0] & self.registers[instr.operand1]
+          self.flags.update(Z = int(res == 0))
+        elif instr.operation == "teq":
+          res = self.registers[instr.operand0] ^ self.registers[instr.operand1]
+          self.flags.update(Z = int(res == 0))
+        # logical operations
+        elif instr.operation == "and":
+          self.registers[instr.operand0] = self.registers[instr.operand1] & self.registers[instr.operand2]
+        elif instr.operation == "eor":
+          self.registers[instr.operand0] = self.registers[instr.operand1] ^ self.registers[instr.operand2]
+        elif instr.operation == "orr":
+          self.registers[instr.operand0] = self.registers[instr.operand1] | self.registers[instr.operand2]
+        elif instr.operation == "bic":
+          self.registers[instr.operand0] = self.registers[instr.operand1] & ~self.registers[instr.operand2]
+        # data movement
+        # ...
+        """
       cur_line += 1
-    return self      
+    return self
 
 
 if __name__ == "__main__":

@@ -26,7 +26,7 @@ def twoscomp(hexstring):
   return val
 
 
-def parseaddress(hexstring):
+def parse_address(hexstring):
   """ Parse an address/offset string for its individual values. """
   leftpars, rightpars = hexstring.count("("), hexstring.count(")")
   if leftpars == 1 and rightpars == 1:
@@ -50,7 +50,32 @@ def calcval(value, assembler):
   else:                                         return getval(value, True)
 
 
-def syscall(v0):
+def parse_arm_instr(instr):
+  conditions = [
+    "eq",
+    "ne",
+    "cs", "hs",
+    "cc", "lo",
+    "mi",
+    "pl",
+    "vs",
+    "vc",
+    "hi",
+    "ls",
+    "ge",
+    "lt",
+    "gt",
+    "le",
+    "al"
+  ]
+  sets_flags = instr[-1] == "s" and instr[-2:] not in conditions
+  if sets_flags: instr = instr[:-1]
+  condition = instr[-2:] if instr[-2:] in conditions else ""
+  operation = instr[:-2] if condition else instr
+  return operation, condition, sets_flags
+
+
+def mips_syscall(v0):
   if v0 == 1:
     print a0
   elif v0 in [2, 3]:
@@ -142,8 +167,16 @@ if __name__ == "__main__":
   print(getval("80000000", False))
   print(getval("FFFFFFFF", False))
   print("")
-  print(parseaddress("A($t0)"))
-  print(parseaddress("$t0(A)"))
-  print(parseaddress("($t0)"))
-  print(parseaddress("$t0"))
-  print(parseaddress("0"))
+  print(parse_address("A($t0)"))
+  print(parse_address("$t0(A)"))
+  print(parse_address("($t0)"))
+  print(parse_address("$t0"))
+  print(parse_address("0"))
+  print("")
+  print(parse_arm_instr("add"))
+  print(parse_arm_instr("addal"))
+  print(parse_arm_instr("adds"))
+  print(parse_arm_instr("teqeq"))
+  print(parse_arm_instr("subeq"))
+  print(parse_arm_instr("teqls"))
+  print(parse_arm_instr("addnes"))
