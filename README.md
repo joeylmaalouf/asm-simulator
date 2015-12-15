@@ -36,3 +36,4 @@ See `example.py` for more examples of Assembler usage.
 * http://www.cs.umd.edu/class/sum2003/cmsc311/Notes/Mips/dataseg.html
 * https://community.arm.com/groups/processors/blog/2010/07/16/condition-codes-1-condition-flags-and-codes
 * http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0068b/Chdehgih.html
+* http://simplemachines.it/doc/arm_inst.pdf
