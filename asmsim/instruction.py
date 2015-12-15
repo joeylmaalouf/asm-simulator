@@ -3,7 +3,7 @@ class Instruction(object):
   def __init__(self, text):
     super(Instruction, self).__init__()
     self.raw = text
-    words = text.replace(",", "").split()
+    words = text.lower().replace(",", "").split()
     self.operation = words[0]
     self.operand0 = words[1] if len(words) > 1 else None
     self.operand1 = words[2] if len(words) > 2 else None

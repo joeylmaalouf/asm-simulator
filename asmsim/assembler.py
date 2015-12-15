@@ -149,7 +149,7 @@ class Assembler(object):
     while cur_line < len(self.instructions):
       instr = self.instructions[cur_line]
       if cur_line in self.labels.values(): pass
-      elif "eq" in instr.operation: # execute only if zero flag is set
+      elif "eq" in instr.operation:
         if "add" in instr.operation:
           self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
         pass
@@ -181,7 +181,6 @@ class Assembler(object):
         pass
       elif "le" in instr.operation:
         pass
-        # self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2]
       elif instr.operation == "adc":
         self.registers[instr.operand0] = self.registers[instr.operand1] + self.registers[instr.operand2] + carry # look into what carry actually is
       elif instr.operation == "sub":
@@ -198,28 +197,29 @@ class Assembler(object):
       elif instr.operation == "bl":
         self.registers[15] = cur_line + 1
       # comparisons for setting flags    
-      elif instr.operation == "CMP":
+      elif instr.operation == "cmp":
         res = self.registers[instr.operand0] - self.registers[instr.operand1]
         self.flags.update(N = int(res < 0), Z = int(res == 0))
-      elif instr.operation == "CMN":
+      elif instr.operation == "cmn":
         res = self.registers[instr.operand0] + self.registers[instr.operand1]
         self.flags.update(N = int(res < 0), Z = int(res == 0), C = int(4294967295 > res > 2147483647), V = int(res > 4294967295))
-      elif instr.operation == "TST":
+      elif instr.operation == "tst":
         res = self.registers[instr.operand0] & self.registers[instr.operand1]
         self.flags.update(Z = int(res == 0))
-      elif instr.operation == "TEQ":
+      elif instr.operation == "teq":
         res = self.registers[instr.operand0] ^ self.registers[instr.operand1]
         self.flags.update(Z = int(res == 0))
       # logical operations
-      elif instr.operation == "AND":
+      elif instr.operation == "and":
         self.registers[instr.operand0] = self.registers[instr.operand1] & self.registers[instr.operand2]
-      elif instr.operation == "EOR":
+      elif instr.operation == "eor":
         self.registers[instr.operand0] = self.registers[instr.operand1] ^ self.registers[instr.operand2]
-      elif instr.operation == "ORR":
+      elif instr.operation == "orr":
         self.registers[instr.operand0] = self.registers[instr.operand1] | self.registers[instr.operand2]
-      elif instr.operation == "BIC":
+      elif instr.operation == "bic":
         self.registers[instr.operand0] = self.registers[instr.operand1] & ~self.registers[instr.operand2]
       # data movement
+      # ...
       else: raise ValueError("Unrecognized instruction: {0}".format(instr.operation))
       cur_line += 1
     return self      
